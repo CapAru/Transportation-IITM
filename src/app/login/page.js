@@ -1,7 +1,13 @@
+"use client";
 import Link from "next/link";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 
 export default function Login() {
+    function handleLogin(event) {
+        event.preventDefault();
+        // Handle login logic here
+        console.log("Login form submitted");
+    }
     return (
         <div className="flex items-center min-h-screen bg-gray-100 w-full">
             <img src="/Background2.png" className="hidden md:block h-screen" />
@@ -16,7 +22,7 @@ export default function Login() {
                     <h1 className="text-3xl sm:text-4xl md:text-5xl mb-4 sm:my-4">
                         Login
                     </h1>
-                    <form className="flex flex-col items-center w-full">
+                    <form className="flex flex-col items-center w-full" onSubmit={handleLogin}>
                         <div className="flex flex-col items-start w-full my-2 md:my-3">
                             <label htmlFor="email" className="mb-1">
                                 Email
