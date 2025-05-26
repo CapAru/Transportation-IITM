@@ -2,10 +2,29 @@
 import { RiLogoutCircleLine } from "react-icons/ri";
 import RequestView from "@/components/RequestView";
 import UserView from "@/components/UserView";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Admin() {
+    // Start with a default value for server-side rendering
     const [view, setView] = useState("requests");
+    // Add a state to track if the component has mounted
+    const [hasMounted, setHasMounted] = useState(false);
+
+    // Handle initial load from localStorage after mounting
+    useEffect(() => {
+        const savedView = localStorage.getItem("adminView");
+        if (savedView) {
+            setView(savedView);
+        }
+        setHasMounted(true);
+    }, []);
+
+    // Update localStorage whenever view changes (but only after mounting)
+    useEffect(() => {
+        if (hasMounted) {
+            localStorage.setItem("adminView", view);
+        }
+    }, [view, hasMounted]);
 
     const handleView = (viewType) => {
         return () => {
