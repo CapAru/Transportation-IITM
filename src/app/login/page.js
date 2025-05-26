@@ -5,7 +5,6 @@ import { IoArrowBackCircleOutline } from "react-icons/io5";
 export default function Login() {
     function handleLogin(event) {
         event.preventDefault();
-        // Handle login logic here
         const formData = new FormData(event.target);
         const email = formData.get("email");
         const password = formData.get("password");
