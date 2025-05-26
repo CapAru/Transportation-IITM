@@ -6,7 +6,33 @@ export default function Login() {
     function handleLogin(event) {
         event.preventDefault();
         // Handle login logic here
-        console.log("Login form submitted");
+        const formData = new FormData(event.target);
+        const email = formData.get("email");
+        const password = formData.get("password");
+        const res = fetch("/api/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                email,
+                password,
+            }),
+        });
+        res
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    alert("Login successful!");
+                    window.location.href = "/user/dashboard";
+                }
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+                alert("An error occurred while logging in.");
+            });
     }
     return (
         <div className="flex items-center min-h-screen bg-gray-100 w-full">
@@ -30,6 +56,7 @@ export default function Login() {
                             <input
                                 type="email"
                                 id="email"
+                                name="email"
                                 placeholder="example@mail.com"
                                 className="border-blue-600 border-2 rounded-lg py-2 px-4 text-md w-full bg-gray-100 placeholder-gray-500 text-black"
                             />
@@ -41,6 +68,7 @@ export default function Login() {
                             <input
                                 type="password"
                                 id="password"
+                                name="password"
                                 placeholder="password"
                                 className="border-blue-600 border-2 rounded-lg py-2 px-4 text-md w-full bg-gray-100 placeholder-gray-500 text-black"
                             />
