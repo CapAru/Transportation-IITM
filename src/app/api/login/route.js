@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { comparePassword } from '@/lib/encryptPassword';
 
 const prisma = new PrismaClient();
 
@@ -19,7 +20,7 @@ export async function POST(request) {
         }
 
         // Check password (in a real application, you should hash the password and compare)
-        if (user.password !== password) {
+        if (comparePassword(password, user.password) === false) {
             return NextResponse.json(
                 { error: 'Invalid password' },
                 { status: 401 }

@@ -1,5 +1,9 @@
+import { generatePassword } from "@/lib/generatePassword";
+import { generateAccessToken, generateRefreshToken } from "@/lib/generateTokens";
+import { sendPasswordMail } from "@/lib/handleMail";
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
+import { encryptPassword } from "@/lib/encryptPassword";
 
 const prisma = new PrismaClient();
 
@@ -19,14 +23,24 @@ export async function POST(request) {
             );
         }
 
+        const accessToken = generateAccessToken(id);
+        const refreshToken = generateRefreshToken(id);
+        const newPassword = generatePassword();
         // Create a new user from the pending user data
+        await sendPasswordMail(pendingUser, newPassword);
+
+        const encryptedPassword = await encryptPassword(newPassword);
+
         const newUser = await prisma.user.create({
             data: {
                 name: pendingUser.name,
                 email: pendingUser.email,
                 college: pendingUser.college,
-                password: pendingUser.password,
-                validity: validityDate, // Set validity to one year from now
+                password: encryptedPassword,
+                validity: validityDate,
+                accessToken: accessToken,
+                refreshToken: refreshToken,
+                expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
             },
         });
 

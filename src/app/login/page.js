@@ -39,7 +39,7 @@ export default function Login() {
             <div className="flex flex-col justify-start bg-gradient-to-br from-purple-900 via-blue-950 to-gray-900 px-4 sm:px-8 py-8 w-full min-h-screen">
                 <Link
                     href="/"
-                    className="text-white inline-block w-fit ml-4 sm:ml-10 mt-4 mb-4 sm:my-8"
+                    className="text-white inline-block w-fit ml-4 sm:ml-10 mb-4 sm:my-8"
                 >
                     <IoArrowBackCircleOutline className="text-4xl sm:text-5xl" />
                 </Link>
@@ -74,7 +74,7 @@ export default function Login() {
                         </div>
                         <button
                             type="submit"
-                            className="bg-blue-400 text-white py-2 px-4 rounded-lg mt-6 w-full cursor-pointer hover:bg-blue-500 transition-colors"
+                            className="hover:bg-blue-400 text-white py-2 px-4 rounded-lg mt-6 w-full cursor-pointer bg-blue-500 transition-colors"
                         >
                             Login
                         </button>
