@@ -1,8 +1,10 @@
 "use client";
 import Link from "next/link";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
+import { useState } from "react";
 
 export default function Login() {
+    const [email, setEmail] = useState("");
     function handleLogin(event) {
         event.preventDefault();
         const formData = new FormData(event.target);
@@ -21,10 +23,14 @@ export default function Login() {
         res
             .then((response) => response.json())
             .then((data) => {
+                
                 if (data.error) {
                     alert(data.error);
-                } else {
-                    alert("Login successful!");
+                }
+                else if (data.isAdmin) {
+                    window.location.href = "/admin";
+                }
+                else {
                     window.location.href = "/user/dashboard";
                 }
             })
@@ -53,8 +59,9 @@ export default function Login() {
                                 Email
                             </label>
                             <input
-                                type="email"
+                                type={email === "admin"? "text" : "email"}
                                 id="email"
+                                onChange={(e) => setEmail(e.target.value)}
                                 name="email"
                                 placeholder="example@mail.com"
                                 className="border-blue-600 border-2 rounded-lg py-2 px-4 text-md w-full bg-gray-100 placeholder-gray-500 text-black"

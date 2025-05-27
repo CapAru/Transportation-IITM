@@ -1,5 +1,8 @@
 import { generatePassword } from "@/lib/generatePassword";
-import { generateAccessToken, generateRefreshToken } from "@/lib/generateTokens";
+import {
+    generateAccessToken,
+    generateRefreshToken,
+} from "@/lib/generateTokens";
 import { sendPasswordMail } from "@/lib/handleMail";
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
@@ -11,7 +14,7 @@ export async function POST(request) {
     try {
         const body = await request.json();
         const { id, validityDate } = body;
-        // Find the pending user by ID
+
         const pendingUser = await prisma.pendingUser.findUnique({
             where: { id: id },
         });
@@ -23,10 +26,8 @@ export async function POST(request) {
             );
         }
 
-        const accessToken = generateAccessToken(id);
-        const refreshToken = generateRefreshToken(id);
         const newPassword = generatePassword();
-        // Create a new user from the pending user data
+
         await sendPasswordMail(pendingUser, newPassword);
 
         const encryptedPassword = await encryptPassword(newPassword);
@@ -37,10 +38,23 @@ export async function POST(request) {
                 email: pendingUser.email,
                 college: pendingUser.college,
                 password: encryptedPassword,
-                validity: validityDate,
+                validity: new Date(validityDate),
+                accessToken: "",
+                refreshToken: "",
+                expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+            },
+        });
+
+        // Now generate tokens with the new User ID
+        const accessToken = generateAccessToken(newUser.id);
+        const refreshToken = generateRefreshToken(newUser.id);
+
+        // Update the user with the generated tokens
+        const updatedUser = await prisma.user.update({
+            where: { id: newUser.id },
+            data: {
                 accessToken: accessToken,
                 refreshToken: refreshToken,
-                expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
             },
         });
 
@@ -49,9 +63,11 @@ export async function POST(request) {
             where: { id: id },
         });
 
-        return NextResponse.json({ success: true, user: newUser }, { status: 201 });
-    }
-    catch (error) {
+        return NextResponse.json(
+            { success: true, user: updatedUser },
+            { status: 201 }
+        );
+    } catch (error) {
         console.error("Error accepting request:", error);
         return NextResponse.json(
             { error: "Internal Server Error" },

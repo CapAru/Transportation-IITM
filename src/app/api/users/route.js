@@ -7,6 +7,9 @@ export async function GET() {
     try {
         // Fetch all users from the database
         const users = await prisma.user.findMany({
+            where: {
+                isAdmin: false,
+            },
             orderBy: {
                 createdAt: 'desc',
             },
