@@ -1,8 +1,4 @@
 import { generatePassword } from "@/lib/generatePassword";
-import {
-    generateAccessToken,
-    generateRefreshToken,
-} from "@/lib/generateTokens";
 import { sendPasswordMail } from "@/lib/handleMail";
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
@@ -45,26 +41,12 @@ export async function POST(request) {
             },
         });
 
-        // Now generate tokens with the new User ID
-        const accessToken = generateAccessToken(newUser.id);
-        const refreshToken = generateRefreshToken(newUser.id);
-
-        // Update the user with the generated tokens
-        const updatedUser = await prisma.user.update({
-            where: { id: newUser.id },
-            data: {
-                accessToken: accessToken,
-                refreshToken: refreshToken,
-            },
-        });
-
-        // Delete the pending user
         await prisma.pendingUser.delete({
             where: { id: id },
         });
 
         return NextResponse.json(
-            { success: true, user: updatedUser },
+            { success: true, user: newUser },
             { status: 201 }
         );
     } catch (error) {
