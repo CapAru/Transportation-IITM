@@ -1,5 +1,5 @@
+import { encryptPassword } from "@/lib/encryptPassword";
 import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
@@ -12,7 +12,7 @@ async function seedAdmin() {
     });
 
     if (!existingAdmin) {
-        const hashedPassword = await bcrypt.hash(adminPassword, 10);
+        const hashedPassword = await encryptPassword(adminPassword);
         await prisma.user.create({
             data: {
                 email: adminEmail,
@@ -27,9 +27,9 @@ async function seedAdmin() {
                 expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
             },
         });
-        console.log("✅ Admin user created");
+        console.log("Admin user created");
     } else {
-        console.log("ℹ️ Admin user already exists");
+        console.log("Admin user already exists");
     }
 }
 
