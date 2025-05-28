@@ -30,8 +30,8 @@ export async function POST(request) {
         }
 
         // Generate access and refresh tokens
-        const accessToken = generateAccessToken(user.id);
-        const refreshToken = generateRefreshToken(user.id);
+        const accessToken = await generateAccessToken(user.id);
+        const refreshToken = await generateRefreshToken(user.id);
         await prisma.user.update({
             where: { id: user.id },
             data: {

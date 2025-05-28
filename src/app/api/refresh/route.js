@@ -20,7 +20,10 @@ export async function POST(request) {
         );
     }
     try {
-        const payload = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+        const payload = jwt.verify(
+            refreshToken,
+            process.env.REFRESH_TOKEN_SECRET
+        );
         // Optional: also verify token exists in session table (extra security)
         const session = await prisma.session.findUnique({
             where: { refreshToken: refreshToken },
@@ -31,9 +34,21 @@ export async function POST(request) {
         }
 
         // Generate new access token
-        const newAccessToken = generateAccessToken(payload.uid);
+        const newAccessToken = await generateAccessToken(payload.uid);
 
-        // Update session with new access token
+        cookieStore.set({
+            name: "sessionToken",
+            value: JSON.stringify({
+                ...tokenData,
+                accessToken: newAccessToken,
+            }),
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+            maxAge: 60 * 60 * 24, // 1 day
+            path: "/",
+        });
+
         await prisma.session.update({
             where: { id: session.id },
             data: {
@@ -41,6 +56,8 @@ export async function POST(request) {
                 expiresAt: new Date(Date.now() + 60 * 15 * 1000), // 15 minutes
             },
         });
+
+        // Update cookie with new access token
 
         return Response.json({ accessToken: newAccessToken }, { status: 200 });
     } catch (error) {

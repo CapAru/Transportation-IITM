@@ -4,7 +4,7 @@ const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
 
 const generateAccessToken = async (uid) => {
-    return jwt.sign({uid}, ACCESS_TOKEN_SECRET, { expiresIn: "2m" });
+    return jwt.sign({uid}, ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
 }
 
 const generateRefreshToken = async (uid) => {

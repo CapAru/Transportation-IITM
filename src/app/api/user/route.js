@@ -8,6 +8,7 @@ export async function GET() {
     // Await the cookies() function
     const cookieStore = await cookies();
     const sessionToken = cookieStore.get("sessionToken")?.value;
+    console.log("Session Token(/user Route):", sessionToken);
     if (!sessionToken) {
         return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
