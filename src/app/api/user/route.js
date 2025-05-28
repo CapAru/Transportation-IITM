@@ -8,7 +8,6 @@ export async function GET() {
     // Await the cookies() function
     const cookieStore = await cookies();
     const sessionToken = cookieStore.get("sessionToken")?.value;
-    console.log("Session Token(/user Route):", sessionToken);
     if (!sessionToken) {
         return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -42,8 +41,23 @@ export async function GET() {
             college: true,
             validity: true,
             firstLogin: true,
+            isAdmin: true,
         },
     });
+
+    if (!user?.isAdmin && new Date(user.validity) < new Date()) {
+        await prisma.session.delete({
+            where: { id: session.id },
+        });
+
+        await prisma.user.delete({
+            where: { id: payload.uid },
+        });
+        return Response.json(
+            { error: "User validity expired" },
+            { status: 403 }
+        );
+    }
 
     if (!user) {
         return Response.json({ error: "User not found" }, { status: 404 });

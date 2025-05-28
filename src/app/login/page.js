@@ -5,6 +5,7 @@ import { useState } from "react";
 
 export default function Login() {
     const [email, setEmail] = useState("");
+    const [warning, setWarning] = useState("");
     function handleLogin(event) {
         event.preventDefault();
         const formData = new FormData(event.target);
@@ -23,7 +24,11 @@ export default function Login() {
         res
             .then((response) => response.json())
             .then((data) => {
-                
+                if (data.validity && data.validity < new Date()) {
+                    setWarning("Your account has expired. Please contact support.");
+                    return;
+                }
+
                 if (data.error) {
                     alert(data.error);
                 }
@@ -85,6 +90,11 @@ export default function Login() {
                         >
                             Login
                         </button>
+                        {warning && (
+                            <p className="text-red-500 mt-2">
+                                {warning}
+                            </p>
+                        )}
                         <p className="mt-4">
                             Don't have an account?{" "}
                             <Link
