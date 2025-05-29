@@ -1,11 +1,41 @@
 "use client";
 import Link from "next/link";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
+    const router = useRouter();
     const [email, setEmail] = useState("");
     const [warning, setWarning] = useState("");
+    const [loggedIn, setLoggedIn] = useState(false);
+    const [path, setPath] = useState("/");
+    useEffect(() => {
+        async function fetchUserData() {
+            const res = await fetch("/api/user", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            if (res.ok) {
+                const data = await res.json();
+                if (data.user) {
+                    setLoggedIn(true);
+                    setPath(data.user.isAdmin ? "/admin" : "/user/dashboard");
+                }
+            }
+        }
+
+        fetchUserData();
+    }, []);
+
+    useEffect(() => {
+        if (loggedIn) {
+            router.push(path);
+        }
+    }, [loggedIn]);
+
     function handleLogin(event) {
         event.preventDefault();
         const formData = new FormData(event.target);

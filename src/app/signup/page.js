@@ -3,8 +3,39 @@ import React from "react";
 import Link from "next/link";
 
 import { IoArrowBackCircleOutline } from "react-icons/io5";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Signup() {
+    const [loggedIn, setLoggedIn] = useState(false);
+    const [path, setPath] = useState("/");
+    const router = useRouter();
+    useEffect(() => {
+        async function fetchUserData() {
+            const res = await fetch("/api/user", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            if (res.ok) {
+                const data = await res.json();
+                if (data.user) {
+                    setLoggedIn(true);
+                    setPath(data.user.isAdmin ? "/admin" : "/user/dashboard");
+                }
+            }
+        }
+
+        fetchUserData();
+    }, []);
+
+    useEffect(() => {
+        if (loggedIn) {
+            router.push(path);
+        }
+    }, [loggedIn]);
+
     function handleSignup(event) {
         event.preventDefault();
         const formData = new FormData(event.target);
