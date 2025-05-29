@@ -38,18 +38,50 @@ export default function Contents() {
         <Link
             key={index}
             href={`/content/${item.shortName}`}
-            className="bg-blue-500 text-white px-4 py-2 rounded-2xl m-2 w-full md:w-1/3 text-center"
+            className="group bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 w-full border border-blue-400/20"
         >
-            <h2 className="text-2xl">{item.shortName}</h2>
-            <p className="text-base text-gray-300">{item.fullName}</p>
+            <div className="text-center">
+                <h2 className="text-3xl font-bold mb-2 group-hover:scale-105 transition-transform duration-200">
+                    {item.shortName}
+                </h2>
+                <p className="text-lg text-blue-100 mb-3 font-medium">
+                    {item.fullName}
+                </p>
+                <p className="text-sm text-blue-50 leading-relaxed opacity-90">
+                    {item.description}
+                </p>
+                <div className="mt-4 inline-flex items-center text-blue-100 group-hover:text-white transition-colors">
+                    <span className="text-sm font-medium">View Datasets</span>
+                    <svg
+                        className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 5l7 7-7 7"
+                        />
+                    </svg>
+                </div>
+            </div>
         </Link>
     ));
 
     return (
-        <div>
-            <h1>Contents</h1>
-            <div className="flex flex-col gap-2 items-center w-full px-5">
-                {buttonElements}
+        <div className="py-16">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="text-center mb-12">
+                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                        Available Data
+                    </h1>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6 lg:gap-8">
+                    {buttonElements}
+                </div>
             </div>
         </div>
     );
