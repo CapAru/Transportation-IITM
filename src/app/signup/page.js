@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React from "react";
 import Link from "next/link";
 
@@ -23,13 +23,14 @@ export default function Signup() {
                 college,
             }),
         });
-        res
-            .then((response) => response.json())
+        res.then((response) => response.json())
             .then((data) => {
                 if (data.error) {
                     alert(data.error);
                 } else {
-                    alert("Account request created successfully! Please wait for approval.");
+                    alert(
+                        "Account request created successfully! Please wait for approval."
+                    );
                     window.location.href = "/login";
                 }
             })
@@ -37,7 +38,6 @@ export default function Signup() {
                 console.error("Error:", error);
                 alert("An error occurred while creating the account.");
             });
-
     }
     return (
         <div className="flex items-center min-h-screen w-full">
@@ -65,7 +65,7 @@ export default function Signup() {
                                     type="email"
                                     id="email"
                                     placeholder="example@mail.com"
-                                    className="border-blue-600 border-2 rounded-lg py-2 px-4 text-md w-full bg-gray-100 placeholder-gray-500 text-black"
+                                    className="border-blue-600 border-2 rounded-lg py-2 px-4 text-base w-full bg-gray-100 placeholder-gray-500 text-black"
                                     name="email"
                                     required
                                 />
@@ -78,7 +78,7 @@ export default function Signup() {
                                     type="text"
                                     id="name"
                                     placeholder="Abc Xyz"
-                                    className="border-blue-600 border-2 rounded-lg py-2 px-4 text-md w-full bg-gray-100 placeholder-gray-500 text-black"
+                                    className="border-blue-600 border-2 rounded-lg py-2 px-4 text-base w-full bg-gray-100 placeholder-gray-500 text-black"
                                     name="name"
                                     required
                                 />
@@ -92,7 +92,7 @@ export default function Signup() {
                                 type="text"
                                 id="collegeName"
                                 placeholder="Indian Institute of Technology, Madras"
-                                className="border-blue-600 border-2 rounded-lg py-2 px-4 text-md w-full bg-gray-100 placeholder-gray-500 text-black"
+                                className="border-blue-600 border-2 rounded-lg py-2 px-4 text-base w-full bg-gray-100 placeholder-gray-500 text-black"
                                 name="collegeName"
                                 required
                             />
@@ -106,7 +106,7 @@ export default function Signup() {
                                     type="password"
                                     id="password"
                                     placeholder="password"
-                                    className="border-blue-600 border-2 rounded-lg py-2 px-4 text-md w-full bg-gray-100 placeholder-gray-500 text-black"
+                                    className="border-blue-600 border-2 rounded-lg py-2 px-4 text-base w-full bg-gray-100 placeholder-gray-500 text-black"
                                     name="password"
                                     required
                                 />
@@ -119,7 +119,7 @@ export default function Signup() {
                                     type="password"
                                     id="cnfpassword"
                                     placeholder="password"
-                                    className="border-blue-600 border-2 rounded-lg py-2 px-4 text-md w-full bg-gray-100 placeholder-gray-500 text-black"
+                                    className="border-blue-600 border-2 rounded-lg py-2 px-4 text-base w-full bg-gray-100 placeholder-gray-500 text-black"
                                     name="cnfpassword"
                                     required
                                 />

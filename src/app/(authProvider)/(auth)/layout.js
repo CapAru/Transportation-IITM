@@ -1,11 +1,22 @@
 "use client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import NavBar from "@/components/NavBar";
+import { useRouter } from "next/navigation";
 
 export default function AuthLayout({ children }) {
+    const router = useRouter();
     const { isLoading, isAuthenticated, error } = useAuth();
     const [userData, setUserData] = useState(null);
     const [userLoading, setUserLoading] = useState(false);
+
+    // Handle error redirect in useEffect
+    useEffect(() => {
+        if (error) {
+            router.push("/access-denied");
+        }
+    }, [error, router]);
 
     useEffect(() => {
         // Only fetch user data after authentication is confirmed
@@ -29,10 +40,12 @@ export default function AuthLayout({ children }) {
         }
     }, [isLoading, isAuthenticated]);
 
+    const pathname = usePathname();
+
     if (isLoading) return <p>Loading authentication...</p>;
 
     if (error) {
-        router.push("/access-denied");
+        return <p>Redirecting...</p>;
     }
 
     if (!isAuthenticated) return <p>Please login to continue</p>;
@@ -43,6 +56,7 @@ export default function AuthLayout({ children }) {
                 <p>Loading user data...</p>
             ) : userData ? (
                 <>
+                    {pathname !== "/admin" && <NavBar />}
                     {children}
                 </>
             ) : (

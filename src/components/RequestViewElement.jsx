@@ -78,22 +78,22 @@ const RequestViewElement = ({ user }) => {
                         <h2 className="text-xl font-bold transition-colors duration-300">
                             {user.name}
                         </h2>
-                        <p className="text-md mt-1 sm:mt-0 hover:text-blue-700 transition-colors cursor-pointer">
+                        <p className="text-base mt-1 sm:mt-0 hover:text-blue-700 transition-colors cursor-pointer">
                             {user.email}
                         </p>
                     </div>
-                    <p className="text-md mt-2">{user.college}</p>
+                    <p className="text-base mt-2">{user.college}</p>
                 </div>
                 <div className="flex flex-col sm:flex-row items-center gap-2 whitespace-nowrap w-full sm:w-auto">
                     <button
                         onClick={handleAcceptClick}
-                        className="bg-green-700 py-2 px-4 sm:py-3 sm:px-6 rounded-2xl text-white text-md w-full sm:w-auto hover:bg-green-600 transition-all duration-300 transform hover:scale-105 hover:shadow-md active:outline-none active:ring-2 active:ring-green-500 cursor-pointer"
+                        className="bg-green-700 py-2 px-4 sm:py-3 sm:px-6 rounded-2xl text-white text-base w-full sm:w-auto hover:bg-green-600 transition-all duration-300 transform hover:scale-105 hover:shadow-md active:outline-none active:ring-2 active:ring-green-500 cursor-pointer"
                     >
                         Accept Request
                     </button>
                     <button
                         onClick={handleReject}
-                        className="bg-red-500 py-2 px-4 sm:py-3 sm:px-6 rounded-2xl text-white text-md w-full sm:w-auto mt-2 sm:mt-0 hover:bg-red-600 transition-all duration-300 transform hover:scale-105 hover:shadow-md active:outline-none active:ring-2 active:ring-red-400 cursor-pointer"
+                        className="bg-red-500 py-2 px-4 sm:py-3 sm:px-6 rounded-2xl text-white text-base w-full sm:w-auto mt-2 sm:mt-0 hover:bg-red-600 transition-all duration-300 transform hover:scale-105 hover:shadow-md active:outline-none active:ring-2 active:ring-red-400 cursor-pointer"
                     >
                         Reject Request
                     </button>

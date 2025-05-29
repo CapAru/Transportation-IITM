@@ -42,6 +42,7 @@ export async function GET() {
             validity: true,
             firstLogin: true,
             isAdmin: true,
+            createdAt: true,
         },
     });
 

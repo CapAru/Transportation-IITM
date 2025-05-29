@@ -51,7 +51,7 @@ export default function PasswordReset() {
     }
 
     if (error || !userData || !userData.user) {
-        return null
+        return null;
     }
     async function handlePasswordReset(event) {
         event.preventDefault();
@@ -93,8 +93,8 @@ export default function PasswordReset() {
         }
     }
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-            <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
+        <div className="flex flex-col items-center justify-center mt-20">
+            <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-md border border-gray-200">
                 <h1 className="text-2xl font-bold text-center mb-6">
                     Password Reset
                 </h1>
@@ -115,7 +115,7 @@ export default function PasswordReset() {
                             id="newPassword"
                             name="newPassword"
                             placeholder="Enter your new password"
-                            className="border-blue-600 border-2 rounded-lg py-2 px-4 text-md w-full bg-gray-100 placeholder-gray-500 text-black"
+                            className="border-blue-600 border-2 rounded-lg py-2 px-4 text-base w-full bg-gray-100 placeholder-gray-500 text-black"
                             required
                         />
                     </div>
@@ -128,7 +128,7 @@ export default function PasswordReset() {
                             id="confirmPassword"
                             name="confirmPassword"
                             placeholder="Confirm your new password"
-                            className="border-blue-600 border-2 rounded-lg py-2 px-4 text-md w-full bg-gray-100 placeholder-gray-500 text-black"
+                            className="border-blue-600 border-2 rounded-lg py-2 px-4 text-base w-full bg-gray-100 placeholder-gray-500 text-black"
                             required
                         />
                     </div>

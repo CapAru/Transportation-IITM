@@ -86,10 +86,16 @@ export default function UserDashboard() {
             <p className="text-gray-600">Welcome to your dashboard!</p>
             {/* Additional dashboard content can be added here */}
             <div className="mt-8">
-                <p className="text-lg">User ID: {userData.user.id}</p>
+                <p className="text-lg">Name: {userData.user.name}</p>
                 <p className="text-lg">Email: {userData.user.email}</p>
                 {/* Add more user details as needed */}
             </div>
+            <Link
+                href="/content"
+                className="mt-6 bg-blue-700 text-white py-2 px-4 rounded-lg hover:bg-blue-500 transition-colors"
+            >
+                <div>Explore Contents</div>
+            </Link>
             <button
                 onClick={handleLogout}
                 className="mt-6 bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition-colors"

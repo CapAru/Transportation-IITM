@@ -21,21 +21,20 @@ export default function Login() {
                 password,
             }),
         });
-        res
-            .then((response) => response.json())
+        res.then((response) => response.json())
             .then((data) => {
                 if (data.validity && data.validity < new Date()) {
-                    setWarning("Your account has expired. Please contact support.");
+                    setWarning(
+                        "Your account has expired. Please contact support."
+                    );
                     return;
                 }
 
                 if (data.error) {
                     alert(data.error);
-                }
-                else if (data.isAdmin) {
+                } else if (data.isAdmin) {
                     window.location.href = "/admin";
-                }
-                else {
+                } else {
                     window.location.href = "/user/dashboard";
                 }
             })
@@ -58,18 +57,21 @@ export default function Login() {
                     <h1 className="text-3xl sm:text-4xl md:text-5xl mb-4 sm:my-4">
                         Login
                     </h1>
-                    <form className="flex flex-col items-center w-full" onSubmit={handleLogin}>
+                    <form
+                        className="flex flex-col items-center w-full"
+                        onSubmit={handleLogin}
+                    >
                         <div className="flex flex-col items-start w-full my-2 md:my-3">
                             <label htmlFor="email" className="mb-1">
                                 Email
                             </label>
                             <input
-                                type={email === "admin"? "text" : "email"}
+                                type={email === "admin" ? "text" : "email"}
                                 id="email"
                                 onChange={(e) => setEmail(e.target.value)}
                                 name="email"
                                 placeholder="example@mail.com"
-                                className="border-blue-600 border-2 rounded-lg py-2 px-4 text-md w-full bg-gray-100 placeholder-gray-500 text-black"
+                                className="border-blue-600 border-2 rounded-lg py-2 px-4 text-base w-full bg-gray-100 placeholder-gray-500 text-black"
                             />
                         </div>
                         <div className="flex flex-col items-start w-full my-2 md:my-3">
@@ -81,7 +83,7 @@ export default function Login() {
                                 id="password"
                                 name="password"
                                 placeholder="password"
-                                className="border-blue-600 border-2 rounded-lg py-2 px-4 text-md w-full bg-gray-100 placeholder-gray-500 text-black"
+                                className="border-blue-600 border-2 rounded-lg py-2 px-4 text-base w-full bg-gray-100 placeholder-gray-500 text-black"
                             />
                         </div>
                         <button
@@ -91,9 +93,7 @@ export default function Login() {
                             Login
                         </button>
                         {warning && (
-                            <p className="text-red-500 mt-2">
-                                {warning}
-                            </p>
+                            <p className="text-red-500 mt-2">{warning}</p>
                         )}
                         <p className="mt-4">
                             Don't have an account?{" "}
