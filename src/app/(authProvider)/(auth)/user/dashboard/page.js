@@ -26,10 +26,6 @@ export default function UserDashboard() {
 
                 const data = await res.json();
                 setUserData(data);
-                // Use the Next.js router for redirection
-                if (data && data.user.firstLogin) {
-                    router.push("/user/password-reset");
-                }
             } catch (err) {
                 console.error("Error fetching user data:", err);
                 setError(err.message);

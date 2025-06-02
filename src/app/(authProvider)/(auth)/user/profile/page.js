@@ -7,13 +7,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
-    const [userInfo, setUserInfo] = useState({
-        name: "Arunava Chakrabarty",
-        email: "chakrabartyarunava19@gmail.com",
-        college: "IIEST, Shibpur",
-        joinDate: "January 2024",
-        validity: "January 2025",
-    });
     const router = useRouter();
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -93,13 +86,6 @@ export default function ProfilePage() {
                                     {userData.user.college}
                                 </p>
                             </div>
-                            <Link
-                                href="/user/password-reset"
-                                className="bg-red-600 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
-                            >
-                                <FiLock className="w-4 h-4" />
-                                Change Password
-                            </Link>
                         </div>
                     </div>
                 </div>

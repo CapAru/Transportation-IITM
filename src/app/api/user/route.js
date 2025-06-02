@@ -40,7 +40,6 @@ export async function GET() {
             email: true,
             college: true,
             validity: true,
-            firstLogin: true,
             isAdmin: true,
             createdAt: true,
         },
