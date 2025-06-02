@@ -1,15 +1,18 @@
 "use client";
-import { RiLogoutCircleLine } from "react-icons/ri";
+import { RiLogoutCircleLine, RiMenuLine, RiCloseLine } from "react-icons/ri";
 import RequestView from "@/components/RequestView";
 import UserView from "@/components/UserView";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import PastView from "@/components/PastView";
 
 export default function Admin() {
     // Start with a default value for server-side rendering
     const [view, setView] = useState("requests");
     // Add a state to track if the component has mounted
     const [hasMounted, setHasMounted] = useState(false);
+    // Add state for mobile menu
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true); // Add missing loading state
@@ -39,7 +42,6 @@ export default function Admin() {
 
                 const data = await res.json();
                 setUserData(data);
-
             } catch (err) {
                 console.error("Error fetching user data:", err);
                 setError(err.message);
@@ -70,6 +72,7 @@ export default function Admin() {
     const handleView = (viewType) => {
         return () => {
             setView(viewType);
+            setIsMobileMenuOpen(false); // Close mobile menu when view changes
         };
     };
 
@@ -92,7 +95,7 @@ export default function Admin() {
             console.error("Error during admin sign out:", error);
             alert("An error occurred while signing out. Please try again.");
         }
-    }
+    };
 
     // If still loading or no data, show a loading indicator
     if (loading) {
@@ -110,35 +113,113 @@ export default function Admin() {
     }
 
     return (
-        <div className="flex flex-col md:flex-row items-center min-h-screen bg-gray-100 w-full">
-            <div className="flex flex-row md:flex-col items-center md:items-start bg-white w-full md:w-1/2 lg:w-1/3 md:h-screen p-2 md:pr-2 md:pl-0 font-bold overflow-x-auto md:overflow-x-visible">
-                <button onClick={handleAdminSignOut} className="bg-transparent text-red-700 text-left text-lg md:text-2xl py-2 md:py-4 px-3 md:px-8 rounded-full md:rounded-none md:rounded-r-full min-w-max md:w-full cursor-pointer hover:bg-red-700 hover:text-white transition-colors flex items-center">
-                    <RiLogoutCircleLine className="inline-block mr-1 md:mr-2 text-2xl md:text-3xl" />
-                    <p className="whitespace-nowrap">Sign Out</p>
+        <div className="flex flex-col md:flex-row items-center min-h-screen w-full">
+            {/* Mobile Header with Hamburger */}
+            <div className="md:hidden fixed top-0 left-0 right-0 w-full bg-white p-4 flex justify-between items-center shadow-md z-50">
+                <h1 className="text-xl font-bold text-blue-900">{view === "requests" ? "View Requests" : view === "users" ? "View Users" : "Past Users"}</h1>
+                <button
+                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                    className="text-blue-900 text-2xl p-2"
+                >
+                    {isMobileMenuOpen ? <RiCloseLine /> : <RiMenuLine />}
+                </button>
+            </div>
+
+            {/* Mobile Dropdown Menu */}
+            {isMobileMenuOpen && (
+                <div className="md:hidden fixed top-16 left-0 right-0 bg-white shadow-lg z-40 border-t">
+                    <div className="flex flex-col p-2">
+                        <button
+                            onClick={handleAdminSignOut}
+                            className="bg-transparent text-red-700 text-left text-lg py-3 px-4 hover:bg-red-50 transition-colors flex items-center border-b border-gray-200"
+                        >
+                            <RiLogoutCircleLine className="inline-block mr-2 text-xl" />
+                            <span>Sign Out</span>
+                        </button>
+                        <button
+                            className={`${
+                                view === "requests"
+                                    ? "bg-blue-900 text-white"
+                                    : "bg-transparent text-blue-900"
+                            } text-left text-lg py-3 px-4 hover:bg-blue-900 hover:text-white transition-colors border-b border-gray-200`}
+                            onClick={handleView("requests")}
+                        >
+                            View Requests
+                        </button>
+                        <button
+                            className={`${
+                                view === "users"
+                                    ? "bg-blue-900 text-white"
+                                    : "bg-transparent text-blue-900"
+                            } text-left text-lg py-3 px-4 hover:bg-blue-900 hover:text-white transition-colors border-b border-gray-200`}
+                            onClick={handleView("users")}
+                        >
+                            View Users
+                        </button>
+                        <button
+                            className={`${
+                                view === "past"
+                                    ? "bg-blue-900 text-white"
+                                    : "bg-transparent text-blue-900"
+                            } text-left text-lg py-3 px-4 hover:bg-blue-900 hover:text-white transition-colors`}
+                            onClick={handleView("past")}
+                        >
+                            Past Users
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Desktop Sidebar */}
+            <div className="hidden md:flex flex-col items-start bg-white w-1/2 lg:w-1/3 h-screen pr-2 font-bold">
+                <button
+                    onClick={handleAdminSignOut}
+                    className="bg-transparent text-red-700 text-left text-2xl py-4 px-8 rounded-r-full w-full cursor-pointer hover:bg-red-700 hover:text-white transition-colors flex items-center"
+                >
+                    <RiLogoutCircleLine className="inline-block mr-2 text-3xl" />
+                    <p>Sign Out</p>
                 </button>
                 <button
                     className={`${
                         view === "requests"
                             ? "bg-blue-900 text-white"
                             : "bg-transparent"
-                    } text-blue-900 text-left text-lg md:text-2xl py-2 md:py-4 px-3 md:px-8 rounded-full md:rounded-none md:rounded-r-full min-w-max md:w-full cursor-pointer hover:bg-blue-900 hover:text-white transition-colors mx-2 md:mx-0 md:mt-2`}
+                    } text-blue-900 text-left text-2xl py-4 px-8 rounded-r-full w-full cursor-pointer hover:bg-blue-900 hover:text-white transition-colors mt-2`}
                     onClick={handleView("requests")}
                 >
-                    <span className="whitespace-nowrap">View Requests</span>
+                    View Requests
                 </button>
                 <button
                     className={`${
                         view === "users"
                             ? "bg-blue-900 text-white"
                             : "bg-transparent"
-                    } text-blue-900 text-left text-lg md:text-2xl py-2 md:py-4 px-3 md:px-8 rounded-full md:rounded-none md:rounded-r-full min-w-max md:w-full cursor-pointer hover:bg-blue-900 hover:text-white transition-colors mx-2 md:mx-0 md:mt-2`}
+                    } text-blue-900 text-left text-2xl py-4 px-8 rounded-r-full w-full cursor-pointer hover:bg-blue-900 hover:text-white transition-colors mt-2`}
                     onClick={handleView("users")}
                 >
-                    <span className="whitespace-nowrap">View Users</span>
+                    View Users
+                </button>
+                <button
+                    className={`${
+                        view === "past"
+                            ? "bg-blue-900 text-white"
+                            : "bg-transparent"
+                    } text-blue-900 text-left text-2xl py-4 px-8 rounded-r-full w-full cursor-pointer hover:bg-blue-900 hover:text-white transition-colors mt-2`}
+                    onClick={handleView("past")}
+                >
+                    Past Users
                 </button>
             </div>
-            <div className="bg-white w-full md:h-screen px-2 md:px-1 overflow-y-auto">
-                {view === "requests" ? <RequestView /> : <UserView />}
+
+            {/* Main Content */}
+            <div className="bg-white w-full md:h-screen px-2 md:px-1 pt-20 md:pt-2 overflow-y-auto">
+                {view === "requests" ? (
+                    <RequestView />
+                ) : view === "users" ? (
+                    <UserView />
+                ) : (
+                    <PastView />
+                )}
             </div>
         </div>
     );

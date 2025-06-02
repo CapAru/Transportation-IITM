@@ -31,9 +31,7 @@ model User {
   validity     DateTime?
   accessToken  String
   refreshToken String
-  expiresAt    DateTime
   isAdmin      Boolean   @default(false)
-  firstLogin   Boolean   @default(true)
   Session      Session[]
 }
 
@@ -45,4 +43,13 @@ model Session {
   refreshToken String   @unique
   createdAt    DateTime @default(now())
   expiresAt    DateTime
+}
+
+model PastUser {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  college   String
+  createdOn DateTime
+  expiredOn DateTime
 }

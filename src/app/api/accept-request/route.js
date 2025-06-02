@@ -3,13 +3,14 @@ import { sendPasswordMail } from "@/lib/handleMail";
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { encryptPassword } from "@/lib/encryptPassword";
+import { use } from "react";
 
 const prisma = new PrismaClient();
 
 export async function POST(request) {
     try {
         const body = await request.json();
-        const { id, validityDate } = body;
+        const { id, userTimezone  } = body;
 
         const pendingUser = await prisma.pendingUser.findUnique({
             where: { id: id },
@@ -24,22 +25,21 @@ export async function POST(request) {
 
         const newPassword = generatePassword();
 
-        await sendPasswordMail(pendingUser, newPassword);
-
         const encryptedPassword = await encryptPassword(newPassword);
-
+        const validityDate = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000); // 2 days validity
         const newUser = await prisma.user.create({
             data: {
                 name: pendingUser.name,
                 email: pendingUser.email,
                 college: pendingUser.college,
                 password: encryptedPassword,
-                validity: new Date(validityDate),
+                validity: validityDate,
                 accessToken: "",
                 refreshToken: "",
-                expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
             },
         });
+        
+        await sendPasswordMail(pendingUser, newPassword, validityDate, userTimezone);
 
         await prisma.pendingUser.delete({
             where: { id: id },

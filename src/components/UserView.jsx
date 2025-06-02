@@ -5,7 +5,12 @@ export default function UserView() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await fetch("/api/users");
+                const res = await fetch("/api/users", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
                 const data = await res.json();
                 if (res.ok) {
                     setUsers(data);

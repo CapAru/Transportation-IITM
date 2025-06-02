@@ -23,7 +23,43 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-export async function sendPasswordMail(user, password) {
+// Function to format date according to user's timezone
+function formatDateByTimezone(date, timezone = "Asia/Kolkata") {
+    try {
+        // Create date in the specified timezone
+        const dateInTimezone = new Date(
+            date.toLocaleString("en-US", { timeZone: timezone })
+        );
+
+        const year = dateInTimezone.getFullYear();
+        const month = String(dateInTimezone.getMonth() + 1).padStart(2, "0");
+        const day = String(dateInTimezone.getDate()).padStart(2, "0");
+        const formattedDate = `${day}-${month}-${year}`;
+
+        // Get hours in 12 hour format
+        const hours = dateInTimezone.getHours() % 12 || 12;
+        const ampm = dateInTimezone.getHours() >= 12 ? "PM" : "AM";
+        const minutes = dateInTimezone.getMinutes().toString().padStart(2, "0");
+
+        // Get timezone abbreviation
+        const timezoneAbbr =
+            new Intl.DateTimeFormat("en", {
+                timeZone: timezone,
+                timeZoneName: "short",
+            })
+                .formatToParts(date)
+                .find((part) => part.type === "timeZoneName")?.value ||
+            timezone;
+
+        return `${formattedDate} ${hours}:${minutes} ${ampm} (${timezoneAbbr})`;
+    } catch (error) {
+        console.error("Error formatting date:", error);
+        // Fallback to UTC if timezone conversion fails
+        return date.toUTCString();
+    }
+}
+
+export async function sendPasswordMail(user, password, validityDate, userTimezone = null) {
     try {
         // Validate required input
         if (!user || !user.email || !password) {
@@ -47,22 +83,36 @@ export async function sendPasswordMail(user, password) {
             };
         }
 
+        const validity = validityDate || new Date(Date.now() + 2 * 24 * 60 * 60 * 1000);
+
+        let timezone = userTimezone;
+
+        if (!timezone) {
+            timezone = "Asia/Kolkata"; // Default to IST
+        }
+
+        const expiryDate = formatDateByTimezone(validity, timezone);
+
         const mailOptions = {
             from: `"Transportation System" <${EMAIL_USER}>`,
             to: user.email,
-            subject: "Your Account Has Been Approved",
-            text: `Hello ${user.name},\n\nYour account has been approved. You can now log in using the following credentials:\n\nEmail: ${user.email}\nPassword: ${password}\n\nPlease change your password after logging in for security reasons.\n\nThank you!`,
+            subject: "Account Approved - Transportation System",
+            text: `Hello ${user.name},\n\nYour account has been approved for the Transportation System.\n\nLogin Details:\nEmail: ${user.email}\nPassword: ${password}\n\nAccount valid until: ${expiryDate}\n\nBest regards,\nTransportation System Team`,
             html: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #2a4365;">Your Account Has Been Approved</h2>
+                <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px;">
+                    <h2 style="color: #333; margin-bottom: 20px;">Account Approved</h2>
                     <p>Hello ${user.name},</p>
-                    <p>Your account has been approved. You can now log in using the following credentials:</p>
-                    <div style="background-color: #f0f4f8; padding: 15px; border-radius: 5px; margin: 15px 0;">
+                    <p>Your account has been approved for the Transportation System.</p>
+                    
+                    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                        <h3 style="margin-top: 0; color: #555;">Login Details</h3>
                         <p><strong>Email:</strong> ${user.email}</p>
                         <p><strong>Password:</strong> ${password}</p>
                     </div>
-                    <p style="color: #e53e3e; font-weight: bold;">Please change your password after logging in for security reasons.</p>
-                    <p>Thank you!</p>
+                    
+                    <p><strong>Account valid until:</strong> ${expiryDate}</p>
+                    
+                    <p>Best regards,<br>Transportation System Team</p>
                 </div>
             `,
         };

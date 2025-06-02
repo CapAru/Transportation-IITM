@@ -3,19 +3,15 @@ import React, { useState } from "react";
 const RequestViewElement = ({ user }) => {
     const [showAcceptPopup, setShowAcceptPopup] = useState(false);
     const [showRejectPopup, setShowRejectPopup] = useState(false);
-    const [validityDate, setValidityDate] = useState("");
 
     function handleAcceptClick() {
         setShowAcceptPopup(true);
     }
 
     function handleFinalAccept() {
-        // Validate date input
-        if (!validityDate) {
-            alert("Please select a validity date");
-            return;
-        }
+        const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         try {
+        
             const res = fetch("/api/accept-request", {
                 method: "POST",
                 headers: {
@@ -23,7 +19,7 @@ const RequestViewElement = ({ user }) => {
                 },
                 body: JSON.stringify({
                     id: user.id,
-                    validityDate: new Date(validityDate),
+                    userTimeZone: userTimeZone,
                 }),
             });
             res.then((response) => response.json()).then((data) => {
@@ -70,6 +66,7 @@ const RequestViewElement = ({ user }) => {
 
         setShowRejectPopup(false);
     }
+
     return (
         <>
             <div className="flex flex-col sm:flex-row justify-between items-center w-full py-4 px-4 sm:px-8 m-1 bg-amber-200 rounded-3xl hover:bg-amber-300 transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1">
@@ -100,37 +97,17 @@ const RequestViewElement = ({ user }) => {
                 </div>
             </div>
 
-            {/* Validity Date Popup */}
+            {/* Accept Request Confirmation Popup */}
             {showAcceptPopup && (
                 <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
                         <h2 className="text-xl font-bold mb-4 text-gray-800">
-                            Set Validity Date
+                            Accept Request
                         </h2>
                         <p className="mb-4 text-gray-600">
-                            Please select an expiry date for user{" "}
-                            <span className="font-semibold">{user.name}</span>'s
-                            account:
+                            Are you sure you want to accept the request from{" "}
+                            <span className="font-semibold">{user.name}</span>?
                         </p>
-
-                        <div className="mb-4">
-                            <label
-                                htmlFor="validityDate"
-                                className="block mb-2 text-sm font-medium text-gray-700"
-                            >
-                                Validity Until
-                            </label>
-                            <input
-                                type="date"
-                                id="validityDate"
-                                value={validityDate}
-                                onChange={(e) =>
-                                    setValidityDate(e.target.value)
-                                }
-                                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                min={new Date().toISOString().split("T")[0]}
-                            />
-                        </div>
 
                         <div className="flex justify-end space-x-3">
                             <button
