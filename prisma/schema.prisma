@@ -53,3 +53,24 @@ model PastUser {
   createdOn DateTime
   expiredOn DateTime
 }
+
+model SampleData {
+  id        Int     @id @default(autoincrement())
+  LogTime   DateTime
+  Pkt_Hdr   String
+  RSU_ID    Int
+  OBU_ID    Int
+  PktType   Int
+  PktLen    Int
+  TimeIST   String @map("Time(IST)")
+  GPSValid  String
+  Latitude  Float
+  Longitude Float
+  DateIST   String @map("Date(IST)")
+  Accel_X   Float
+  Accel_Y   Float
+  Accel_Z   Float
+  Gyro_X    Float
+  Gyro_Y    Float
+  Gyro_Z    Float
+}

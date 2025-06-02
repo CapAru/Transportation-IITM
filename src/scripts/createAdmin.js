@@ -1,4 +1,4 @@
-import { encryptPassword } from "@/lib/encryptPassword";
+import { encryptPassword } from "../lib/encryptPassword.js";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
@@ -21,10 +21,8 @@ async function seedAdmin() {
                 college: "AdminInstitute",
                 isAdmin: true,
                 validity: null,
-                firstLogin: false,
                 accessToken: "",
                 refreshToken: "",
-                expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
             },
         });
         console.log("Admin user created");
