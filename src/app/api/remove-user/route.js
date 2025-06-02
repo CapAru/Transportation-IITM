@@ -20,10 +20,33 @@ export async function POST(request) {
             );
         }
 
-        // Delete the user
+        // Check if the user is an admin
+        if (user.isAdmin) {
+            return NextResponse.json(
+                { error: "Cannot remove an admin user" },
+                { status: 403 }
+            );
+        }
+
+        await prisma.pastUser.create({
+            data: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                college: user.college,
+                createdOn: user.createdAt,
+                expiredOn: new Date(),
+            },
+        });
+
+        await prisma.session.deleteMany({
+            where: { userId: id },
+        });
+
         await prisma.user.delete({
             where: { id: id },
         });
+        // Delete the user
 
         return NextResponse.json({ success: true }, { status: 200 });
     } catch (error) {

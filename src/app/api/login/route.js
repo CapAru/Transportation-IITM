@@ -37,7 +37,6 @@ export async function POST(request) {
             data: {
                 accessToken: accessToken,
                 refreshToken: refreshToken,
-                expiresAt: new Date(Date.now() + 60 * 60 * 24 * 1000), // 1 day
             },
         });
 
