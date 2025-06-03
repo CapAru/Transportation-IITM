@@ -10,6 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@fast-csv/format": "^5.0.2",
     "@prisma/client": "^6.8.2",
     "bcrypt": "^6.0.0",
     "generate-password": "^1.7.1",
