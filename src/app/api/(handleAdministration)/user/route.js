@@ -5,7 +5,6 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export async function GET() {
-    // Await the cookies() function
     const cookieStore = await cookies();
     const sessionToken = cookieStore.get("sessionToken")?.value;
     if (!sessionToken) {
@@ -22,7 +21,6 @@ export async function GET() {
     }
     const payload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
-    // Optional: also verify token exists in session table (extra security)
     const session = await prisma.session.findUnique({
         where: { accessToken: token },
     });

@@ -57,7 +57,6 @@ export default function ProfilePage() {
     if (error || !userData || !userData.user) {
         return null;
     }
-    console.log("User Data:", userData);
     const createdAt = new Date(userData.user.createdAt);
     const formattedDate = createdAt.toLocaleDateString("en-IN", {
         year: "numeric",

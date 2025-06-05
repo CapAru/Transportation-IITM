@@ -5,7 +5,7 @@ import { generateAccessToken } from "@/lib/generateTokens";
 
 const prisma = new PrismaClient();
 
-export async function POST(request) {
+export async function POST() {
     const cookieStore = await cookies();
     const sessionToken = cookieStore.get("sessionToken")?.value;
     if (!sessionToken) {

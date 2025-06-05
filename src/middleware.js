@@ -21,7 +21,6 @@ export async function middleware(request) {
         
         try {
             const accessToken = JSON.parse(sessionToken.value).accessToken;
-            console.log("Access Token:", accessToken);
             
             // Convert secret to Uint8Array for jose
             const secret = new TextEncoder().encode(process.env.ACCESS_TOKEN_SECRET);
@@ -35,15 +34,12 @@ export async function middleware(request) {
             requestHeaders.set('x-user-email', payload.email);
             requestHeaders.set('x-user-admin', payload.isAdmin?.toString() || 'false');
             
-            console.log("Token verified successfully:", payload);
-            
             return NextResponse.next({
                 request: {
                     headers: requestHeaders,
                 },
             });
         } catch (error) {
-            console.log("Token verification error:", error);
             return new NextResponse(
                 JSON.stringify({ error: "Invalid token" }),
                 {

@@ -97,6 +97,26 @@ export default function Admin() {
         }
     };
 
+    const handleUserRemove = async () => {
+        try {
+            const res = await fetch("/api/remove-expired-user", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (!res.ok) {
+                throw new Error("Failed to remove expired users");
+            }
+
+            const data = await res.json();
+            alert(data.message || "Expired users removed successfully.");
+        } catch (error) {
+            console.error("Error removing expired users:", error);
+            alert("An error occurred while removing expired users. Please try again.");
+        }
+    }
     // If still loading or no data, show a loading indicator
     if (loading) {
         return (
@@ -208,6 +228,12 @@ export default function Admin() {
                     onClick={handleView("past")}
                 >
                     Past Users
+                </button>
+                <button
+                    className={`text-blue-900 text-left text-2xl py-4 px-8 rounded-r-full w-full cursor-pointer hover:bg-blue-900 hover:text-white transition-colors mt-2`}
+                    onClick={handleUserRemove}
+                >
+                    Remove Expired Users
                 </button>
             </div>
 
