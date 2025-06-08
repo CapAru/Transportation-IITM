@@ -4,9 +4,8 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function seedAdmin() {
-    const adminEmail = "admin";
-    const adminPassword = "admin";
-
+    const adminEmail = process.env.ADMIN_EMAIL;
+    const adminPassword = process.env.ADMIN_PASSWORD;
     const existingAdmin = await prisma.user.findUnique({
         where: { email: adminEmail },
     });
