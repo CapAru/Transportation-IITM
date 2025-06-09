@@ -9,6 +9,10 @@ const prisma = new PrismaClient();
 
 export async function POST(request) {
     try {
+        const reqHeaders = await request.headers;
+        const userId = reqHeaders.get("x-user-id");
+        const userEmail = reqHeaders.get("x-user-email");
+        const userAdmin = reqHeaders.get("x-user-admin") === "true";
         const body = await request.json();
         const { id, userTimezone  } = body;
 

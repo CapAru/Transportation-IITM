@@ -7,7 +7,8 @@ export async function middleware(request) {
 
     if (pathname.startsWith("/api/") && 
         !pathname.startsWith("/api/login") && 
-        !pathname.startsWith("/api/register")) {
+        !pathname.startsWith("/api/register") &&
+        !pathname.startsWith("/api/remove-expired-user")){
         
         const cookieStore = await cookies();
         const sessionToken = cookieStore.get("sessionToken");

@@ -1,10 +1,19 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { headers } from "next/headers";
 
 const prisma = new PrismaClient();
 export async function POST() {
     try {
-        // Fetch all users
+        // Check for the cron secret in the request headers
+        const reqHeaders = await headers();
+        const cronSecret = reqHeaders.get("x-cron-secret");
+        if (cronSecret !== process.env.CRON_SECRET) {
+            return NextResponse.json(
+                { error: "Unauthorized access." },
+                { status: 401 }
+            );
+        }
         const users = await prisma.user.findMany({
             where: {
                 validity: {
@@ -18,6 +27,14 @@ export async function POST() {
                 message: "No expired users found.",
             });
         }
+
+        await prisma.pastUser.deleteMany({
+            where: {
+                email: {
+                    in: users.map(user => user.email),
+                }
+            },
+        });
 
         await prisma.pastUser.createMany({
             data: users.map(user => ({
@@ -45,7 +62,6 @@ export async function POST() {
                 },
             },
         });
-
         return NextResponse.json({
             message: `${deletedUsers.count} expired user(s) removed successfully.`,
         });
