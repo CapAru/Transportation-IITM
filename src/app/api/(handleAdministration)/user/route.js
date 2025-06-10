@@ -51,6 +51,7 @@ export async function GET() {
         await prisma.user.delete({
             where: { id: payload.uid },
         });
+        cookieStore.delete("sessionToken");
         return Response.json(
             { error: "User validity expired" },
             { status: 403 }

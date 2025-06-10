@@ -5,55 +5,79 @@ import { cookies } from "next/headers";
 export async function middleware(request) {
     const { pathname } = request.nextUrl;
 
-    if (pathname.startsWith("/api/") && 
-        !pathname.startsWith("/api/login") && 
-        !pathname.startsWith("/api/register") &&
-        !pathname.startsWith("/api/remove-expired-user")){
-        
-        const cookieStore = await cookies();
-        const sessionToken = cookieStore.get("sessionToken");
-        
-        if (!sessionToken) {
-            return new NextResponse(JSON.stringify({ error: "Unauthorized" }), {
-                status: 401,
-                headers: { "Content-Type": "application/json" },
-            });
+    const isApiRoute = pathname.startsWith("/api/");
+    const isPublicApi = [
+        "/api/login",
+        "/api/register",
+        "/api/remove-expired-user",
+    ].some((p) => pathname.startsWith(p));
+
+    const isProtectedPage = pathname.startsWith("/admin");
+
+    const cookieStore = await cookies();
+    const sessionToken = cookieStore.get("sessionToken");
+
+    if (!sessionToken) {
+        // If accessing protected frontend page or protected API without token
+        if (!isApiRoute || !isPublicApi) {
+            return redirectToLoginOrDeny(request, isApiRoute);
         }
-        
-        try {
-            const accessToken = JSON.parse(sessionToken.value).accessToken;
-            
-            // Convert secret to Uint8Array for jose
-            const secret = new TextEncoder().encode(process.env.ACCESS_TOKEN_SECRET);
-            
-            // Verify token using jose
-            const { payload } = await jwtVerify(accessToken, secret);
-            
-            // Add user info to request headers for API routes to access
-            const requestHeaders = new Headers(request.headers);
-            requestHeaders.set('x-user-id', payload.userId);
-            requestHeaders.set('x-user-email', payload.email);
-            requestHeaders.set('x-user-admin', payload.isAdmin?.toString() || 'false');
-            
-            return NextResponse.next({
-                request: {
-                    headers: requestHeaders,
-                },
-            });
-        } catch (error) {
-            return new NextResponse(
-                JSON.stringify({ error: "Invalid token" }),
-                {
-                    status: 403,
-                    headers: { "Content-Type": "application/json" },
-                }
+        return NextResponse.next();
+    }
+
+    try {
+        const accessToken = JSON.parse(sessionToken.value).accessToken;
+        const secret = new TextEncoder().encode(
+            process.env.ACCESS_TOKEN_SECRET
+        );
+        const { payload } = await jwtVerify(accessToken, secret);
+
+        if ((!payload || !payload.userId || payload.exp < Date.now() / 1000) && isPublicApi) {
+            // If token is invalid or expired
+            cookieStore.delete("sessionToken");
+            return NextResponse.next();
+        }
+        // 🛑 Admin route protection
+        if (isProtectedPage && !payload.isAdmin) {
+            return NextResponse.redirect(
+                new URL("/access-denied", request.url)
             );
         }
+
+        // Append headers for downstream use
+        const requestHeaders = new Headers(request.headers);
+        requestHeaders.set("x-user-id", payload.userId);
+        requestHeaders.set("x-user-email", payload.email);
+        requestHeaders.set(
+            "x-user-admin",
+            payload.isAdmin?.toString() || "false"
+        );
+
+        return NextResponse.next({
+            request: {
+                headers: requestHeaders,
+            },
+        });
+    } catch (error) {
+        sessionToken && cookieStore.delete("sessionToken");
+        return new NextResponse(JSON.stringify({ error: "Invalid token" }), {
+            status: 403,
+            headers: { "Content-Type": "application/json" },
+        });
     }
-    
-    return NextResponse.next();
+}
+
+function redirectToLoginOrDeny(request, isApiRoute) {
+    if (isApiRoute) {
+        return new NextResponse(JSON.stringify({ error: "Unauthorized" }), {
+            status: 401,
+            headers: { "Content-Type": "application/json" },
+        });
+    } else {
+        return NextResponse.redirect(new URL("/login", request.url));
+    }
 }
 
 export const config = {
-    matcher: ["/api/:path*"],
+    matcher: ["/api/:path*", "/admin/:path*"],
 };

@@ -34,8 +34,7 @@ export async function POST() {
         }
 
         // Generate new access token
-        const newAccessToken = await generateAccessToken(payload.uid);
-
+        const newAccessToken = await generateAccessToken(payload.uid, payload.isAdmin);
         cookieStore.set({
             name: "sessionToken",
             value: JSON.stringify({

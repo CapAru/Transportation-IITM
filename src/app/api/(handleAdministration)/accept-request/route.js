@@ -1,18 +1,14 @@
 import { generatePassword } from "@/lib/generatePassword";
-import { sendPasswordMail } from "@/lib/handleMail";
+import { sendPasswordMail } from "@/lib/Mails/PasswordMail";
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { encryptPassword } from "@/lib/encryptPassword";
-import { use } from "react";
 
 const prisma = new PrismaClient();
 
 export async function POST(request) {
     try {
         const reqHeaders = await request.headers;
-        const userId = reqHeaders.get("x-user-id");
-        const userEmail = reqHeaders.get("x-user-email");
-        const userAdmin = reqHeaders.get("x-user-admin") === "true";
         const body = await request.json();
         const { id, userTimezone  } = body;
 

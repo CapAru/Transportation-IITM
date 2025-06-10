@@ -2,7 +2,7 @@ import cron from "node-cron";
 import dotenv from "dotenv";
 
 dotenv.config();
-cron.schedule("*/15 * * * *", async () => {
+cron.schedule("* * * * *", async () => {
     const baseUrl = process.env.LOCAL_API_URL || "http://localhost:3000";
     try {
         const res = await fetch(
