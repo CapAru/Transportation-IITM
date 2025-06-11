@@ -28,16 +28,29 @@ export async function POST(request) {
             );
         }
 
-        await prisma.pastUser.create({
-            data: {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                college: user.college,
-                createdOn: user.createdAt,
-                expiredOn: new Date(),
-            },
-        });
+        if (await prisma.pastUser.count({ where: { email: user.email } })) {
+            await prisma.pastUser.update({
+                where: { email: user.email },
+                data: {
+                    id: user.id,
+                    name: user.name,
+                    college: user.college,
+                    createdOn: user.createdAt,
+                    expiredOn: new Date(),
+                },
+            });
+        } else {
+            await prisma.pastUser.create({
+                data: {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    college: user.college,
+                    createdOn: user.createdAt,
+                    expiredOn: new Date(),
+                },
+            });
+        }
 
         await prisma.session.deleteMany({
             where: { userId: id },

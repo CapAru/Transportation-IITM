@@ -1,14 +1,30 @@
 import React, { useState } from "react";
+import "@aws-amplify/ui-react/styles.css";
+import { Loader } from "@aws-amplify/ui-react";
 
 const RequestViewElement = ({ user }) => {
     const [showAcceptPopup, setShowAcceptPopup] = useState(false);
     const [showRejectPopup, setShowRejectPopup] = useState(false);
+    const [isAcceptLoading, setIsAcceptLoading] = useState(false);
+    const [isRejectLoading, setIsRejectLoading] = useState(false);
+    const [toast, setToast] = useState({ show: false, message: "", type: "" });
+
+    const showToast = (message, type = "success") => {
+        setToast({ show: true, message, type });
+        setTimeout(() => {
+            setToast({ show: false, message: "", type: "" });
+            if (type === "success") {
+                window.location.reload();
+            }
+        }, 3000);
+    };
 
     function handleAcceptClick() {
         setShowAcceptPopup(true);
     }
 
     async function handleFinalAccept() {
+        setIsAcceptLoading(true);
         const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         try {
             const res = await fetch("/api/accept-request", {
@@ -24,13 +40,15 @@ const RequestViewElement = ({ user }) => {
             if (res.error) {
                 throw new Error(res.error || "Failed to accept request");
             }
-            alert("Request accepted successfully!");
-            window.location.reload();
+            showToast("Request accepted successfully!");
         } catch (error) {
             console.error("Error accepting request:", error);
-            alert(error || "An error occurred while accepting the request.");
+            showToast(
+                error || "An error occurred while accepting the request.",
+                "error"
+            );
         }
-
+        setIsAcceptLoading(false);
         setShowAcceptPopup(false);
     }
 
@@ -39,6 +57,7 @@ const RequestViewElement = ({ user }) => {
     }
 
     async function handleFinalReject() {
+        setIsRejectLoading(true);
         try {
             const res = await fetch("/api/reject-request", {
                 method: "POST",
@@ -47,24 +66,59 @@ const RequestViewElement = ({ user }) => {
                 },
                 body: JSON.stringify({ id: user.id }),
             });
-            res.then((response) => response.json()).then((data) => {
-                if (data.error) {
-                    alert(data.error);
-                } else {
-                    alert("Request rejected successfully!");
-                    window.location.reload();
-                }
-            });
+            if (res.error) {
+                throw new Error(res.error || "Failed to reject request");
+            }
+
+            showToast("Request rejected successfully!");
         } catch (error) {
             console.error("Error rejecting request:", error);
-            alert("An error occurred while rejecting the request.");
+            showToast(
+                "An error occurred while rejecting the request.",
+                "error"
+            );
         }
-
+        setIsRejectLoading(false);
         setShowRejectPopup(false);
     }
 
     return (
         <>
+            {/* Toast Notification */}
+            {toast.show && (
+                <div
+                    className={`fixed top-4 left-1/2 z-50 rounded-lg shadow-lg text-white font-medium overflow-hidden ${
+                        toast.type === "error" ? "bg-red-500" : "bg-green-500"
+                    }`}
+                    style={{
+                        transform: "translateX(-50%)",
+                        animation: "slideInFromTop 0.5s ease-out",
+                    }}
+                >
+                    <div className="px-6 py-3">{toast.message}</div>
+                    {/* Loading bar */}
+                    <div
+                        className={`w-full h-1 ${
+                            toast.type === "error"
+                                ? "bg-red-600"
+                                : "bg-green-600"
+                        } bg-opacity-20`}
+                    >
+                        <div
+                            className={`h-full ${
+                                toast.type === "error"
+                                    ? "bg-red-400"
+                                    : "bg-green-400"
+                            }  bg-opacity-80`}
+                            style={{
+                                width: "100%",
+                                animation: "shrinkProgress 3s linear",
+                            }}
+                        />
+                    </div>
+                </div>
+            )}
+
             <div className="flex flex-col sm:flex-row justify-between items-center w-full py-4 px-4 sm:px-8 m-1 bg-amber-200 rounded-3xl hover:bg-amber-300 transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1">
                 <div className="flex flex-col w-full sm:flex-grow sm:mr-8 mb-4 sm:mb-0">
                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
@@ -109,14 +163,29 @@ const RequestViewElement = ({ user }) => {
                             <button
                                 onClick={() => setShowAcceptPopup(false)}
                                 className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors cursor-pointer"
+                                disabled={isAcceptLoading}
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handleFinalAccept}
-                                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors cursor-pointer"
+                                disabled={isAcceptLoading}
+                                className={`px-4 py-2 text-white rounded-md transition-colors flex items-center justify-center ${
+                                    isAcceptLoading
+                                        ? "bg-green-400 cursor-not-allowed"
+                                        : "bg-green-600 hover:bg-green-700 cursor-pointer"
+                                }`}
                             >
-                                Accept Request
+                                {isAcceptLoading ? (
+                                    <>
+                                        <span className="mr-2">
+                                            Accepting...
+                                        </span>
+                                        <Loader filledColor="green" />
+                                    </>
+                                ) : (
+                                    "Accept Request"
+                                )}
                             </button>
                         </div>
                     </div>
@@ -139,14 +208,29 @@ const RequestViewElement = ({ user }) => {
                             <button
                                 onClick={() => setShowRejectPopup(false)}
                                 className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors cursor-pointer"
+                                disabled={isRejectLoading}
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handleFinalReject}
-                                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors cursor-pointer"
+                                disabled={isRejectLoading}
+                                className={`px-4 py-2 text-white rounded-md transition-colors flex items-center justify-center ${
+                                    isRejectLoading
+                                        ? "bg-red-400 cursor-not-allowed"
+                                        : "bg-red-600 hover:bg-red-700 cursor-pointer"
+                                }`}
                             >
-                                Reject Request
+                                {isRejectLoading ? (
+                                    <>
+                                        <span className="mr-2">
+                                            Rejecting...
+                                        </span>
+                                        <Loader filledColor="red" />
+                                    </>
+                                ) : (
+                                    "Reject Request"
+                                )}
                             </button>
                         </div>
                     </div>
