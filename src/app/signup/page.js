@@ -1,15 +1,21 @@
 "use client";
 import React from "react";
 import Link from "next/link";
-
+import { Loader } from "@aws-amplify/ui-react";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import "@aws-amplify/ui-react/styles.css";
 
 export default function Signup() {
     const [loggedIn, setLoggedIn] = useState(false);
     const [path, setPath] = useState("/");
+    const [isLoading, setIsLoading] = useState(false);
+    const [warning, setWarning] = useState("");
+    const [success, setSuccess] = useState("");
+    const [isCompleted, setIsCompleted] = useState(false); // Add completion state
     const router = useRouter();
+
     useEffect(() => {
         async function fetchUserData() {
             const res = await fetch("/api/user", {
@@ -38,6 +44,10 @@ export default function Signup() {
 
     function handleSignup(event) {
         event.preventDefault();
+        setIsLoading(true);
+        setWarning("");
+        setSuccess("");
+
         const formData = new FormData(event.target);
         const email = formData.get("email");
         const name = formData.get("name");
@@ -57,20 +67,28 @@ export default function Signup() {
         res.then((response) => response.json())
             .then((data) => {
                 if (data.error) {
-                    console.log(data)
-                    alert(data.error);
+                    console.log(data);
+                    setWarning(data.error);
+                    setIsLoading(false);
                 } else {
-                    alert(
-                        "Account request created successfully! Please wait for approval."
+                    setSuccess(
+                        "Account request created successfully! Please wait for approval. Redirecting to login..."
                     );
-                    window.location.href = "/login";
+                    setIsCompleted(true);
+                    setIsLoading(false);
+                    // Navigate to login after showing success message
+                    setTimeout(() => {
+                        router.push("/login");
+                    }, 3000);
                 }
             })
             .catch((error) => {
                 console.error("Error:", error);
-                alert("An error occurred while creating the account.");
+                setWarning("An error occurred while creating the account.");
+                setIsLoading(false);
             });
     }
+
     return (
         <div className="flex items-center min-h-screen w-full">
             <div className="flex flex-col items-start justify-start bg-gradient-to-br from-purple-900 via-blue-950 to-gray-900 px-4 sm:px-8 py-8 w-full min-h-screen">
@@ -84,6 +102,21 @@ export default function Signup() {
                     <h1 className="text-3xl sm:text-4xl md:text-5xl mb-4">
                         Sign Up
                     </h1>
+
+                    {/* Warning message display */}
+                    {warning && (
+                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                            <span className="block sm:inline">{warning}</span>
+                        </div>
+                    )}
+
+                    {/* Success message display */}
+                    {success && (
+                        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                            <span className="block sm:inline">{success}</span>
+                        </div>
+                    )}
+
                     <form
                         className="flex flex-col items-center w-full"
                         onSubmit={handleSignup}
@@ -100,6 +133,7 @@ export default function Signup() {
                                     className="border-blue-600 border-2 rounded-lg py-2 px-4 text-base w-full bg-gray-100 placeholder-gray-500 text-black"
                                     name="email"
                                     required
+                                    disabled={isLoading} // Disable input while loading
                                 />
                             </div>
                             <div className="flex flex-col items-start w-full my-2 md:my-3 md:ml-2">
@@ -113,6 +147,7 @@ export default function Signup() {
                                     className="border-blue-600 border-2 rounded-lg py-2 px-4 text-base w-full bg-gray-100 placeholder-gray-500 text-black"
                                     name="name"
                                     required
+                                    disabled={isLoading} // Disable input while loading
                                 />
                             </div>
                         </div>
@@ -127,41 +162,30 @@ export default function Signup() {
                                 className="border-blue-600 border-2 rounded-lg py-2 px-4 text-base w-full bg-gray-100 placeholder-gray-500 text-black"
                                 name="collegeName"
                                 required
+                                disabled={isLoading} // Disable input while loading
                             />
                         </div>
-                        {/* <div className="flex flex-col md:flex-row items-start w-full my-3">
-                            <div className="flex flex-col items-start w-full my-2 md:my-3 md:mr-2">
-                                <label htmlFor="password" className="mb-1">
-                                    Password
-                                </label>
-                                <input
-                                    type="password"
-                                    id="password"
-                                    placeholder="password"
-                                    className="border-blue-600 border-2 rounded-lg py-2 px-4 text-base w-full bg-gray-100 placeholder-gray-500 text-black"
-                                    name="password"
-                                    required
-                                />
-                            </div>
-                            <div className="flex flex-col items-start w-full my-2 md:my-3 md:ml-2">
-                                <label htmlFor="cnfpassword" className="mb-1">
-                                    Confirm Password
-                                </label>
-                                <input
-                                    type="password"
-                                    id="cnfpassword"
-                                    placeholder="password"
-                                    className="border-blue-600 border-2 rounded-lg py-2 px-4 text-base w-full bg-gray-100 placeholder-gray-500 text-black"
-                                    name="cnfpassword"
-                                    required
-                                />
-                            </div>
-                        </div> */}
                         <button
                             type="submit"
-                            className="hover:bg-blue-400 text-white py-2 px-4 rounded-lg mt-6 w-full cursor-pointer bg-blue-500 transition-colors"
+                            disabled={isLoading || isCompleted} // Disable button while loading or completed
+                            className={`${
+                                isLoading || isCompleted
+                                    ? "bg-blue-400 cursor-not-allowed"
+                                    : "hover:bg-blue-400 bg-blue-500 cursor-pointer"
+                            } text-white py-2 px-4 rounded-lg mt-6 w-full transition-colors flex items-center justify-center`}
                         >
-                            Create Account
+                            {isLoading ? (
+                                <>
+                                    <p>Submitting Request...</p>
+                                    <div className="ml-1 flex items-center justify-center">
+                                        <Loader />
+                                    </div>
+                                </>
+                            ) : isCompleted ? (
+                                "Request Submitted Successfully"
+                            ) : (
+                                "Create Account"
+                            )}
                         </button>
                         <p className="mt-4">
                             Already have an account?{" "}

@@ -3,6 +3,8 @@ import Link from "next/link";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Loader } from "@aws-amplify/ui-react";
+import "@aws-amplify/ui-react/styles.css";
 
 export default function Login() {
     const router = useRouter();
@@ -10,6 +12,8 @@ export default function Login() {
     const [warning, setWarning] = useState("");
     const [loggedIn, setLoggedIn] = useState(false);
     const [path, setPath] = useState("/");
+    const [isLoading, setIsLoading] = useState(false); // Add loading state
+
     useEffect(() => {
         async function fetchUserData() {
             const res = await fetch("/api/user", {
@@ -38,9 +42,13 @@ export default function Login() {
 
     function handleLogin(event) {
         event.preventDefault();
+        setIsLoading(true); // Set loading to true when login starts
+        setWarning(""); // Clear any previous warnings
+
         const formData = new FormData(event.target);
         const email = formData.get("email");
         const password = formData.get("password");
+
         const res = fetch("/api/login", {
             method: "POST",
             headers: {
@@ -51,28 +59,36 @@ export default function Login() {
                 password,
             }),
         });
+
         res.then((response) => response.json())
             .then((data) => {
                 if (data.validity && data.validity < new Date()) {
                     setWarning(
                         "Your account has expired. Please contact support."
                     );
+                    setIsLoading(false); // Stop loading on error
                     return;
                 }
 
                 if (data.error) {
-                    alert(data.error);
+                    setWarning(data.error); // Use warning instead of alert
+                    setIsLoading(false); // Stop loading on error
                 } else if (data.isAdmin) {
                     window.location.href = "/admin";
                 } else {
                     window.location.href = "/user/dashboard";
                 }
+                // Don't set loading to false here since we're redirecting
             })
             .catch((error) => {
                 console.error("Error:", error);
-                alert("An error occurred while logging in.");
+                setWarning(
+                    "An error occurred while logging in. Please try again."
+                ); // Use warning instead of alert
+                setIsLoading(false); // Stop loading on error
             });
     }
+
     return (
         <div className="flex items-center min-h-screen bg-gray-100 w-full">
             <img src="/Background2.png" className="hidden md:block h-screen" />
@@ -102,6 +118,7 @@ export default function Login() {
                                 name="email"
                                 placeholder="example@mail.com"
                                 className="border-blue-600 border-2 rounded-lg py-2 px-4 text-base w-full bg-gray-100 placeholder-gray-500 text-black"
+                                disabled={isLoading} // Disable input while loading
                             />
                         </div>
                         <div className="flex flex-col items-start w-full my-2 md:my-3">
@@ -114,16 +131,33 @@ export default function Login() {
                                 name="password"
                                 placeholder="password"
                                 className="border-blue-600 border-2 rounded-lg py-2 px-4 text-base w-full bg-gray-100 placeholder-gray-500 text-black"
+                                disabled={isLoading} // Disable input while loading
                             />
                         </div>
                         <button
                             type="submit"
-                            className="hover:bg-blue-400 text-white py-2 px-4 rounded-lg mt-6 w-full cursor-pointer bg-blue-500 transition-colors"
+                            disabled={isLoading} // Disable button while loading
+                            className={`${
+                                isLoading
+                                    ? "bg-blue-400 cursor-not-allowed"
+                                    : "hover:bg-blue-400 bg-blue-500 cursor-pointer"
+                            } text-white py-2 px-4 rounded-lg mt-6 w-full transition-colors flex items-center justify-center`}
                         >
-                            Login
+                            {isLoading ? (
+                                <>
+                                    <p>Logging in...</p>
+                                    <div className="ml-1 flex items-center justify-center">
+                                        <Loader />
+                                    </div>
+                                </>
+                            ) : (
+                                "Login"
+                            )}
                         </button>
                         {warning && (
-                            <p className="text-red-500 mt-2">{warning}</p>
+                            <p className="text-red-500 mt-2 text-center">
+                                {warning}
+                            </p>
                         )}
                         <p className="mt-4">
                             Don't have an account?{" "}

@@ -22,7 +22,7 @@ export async function POST(request) {
         }
 
         // Check password (in a real application, you should hash the password and compare)
-        if (comparePassword(password, user.password) === false) {
+        if (await comparePassword(password, user.password) === false) {
             return NextResponse.json(
                 { error: "Invalid password" },
                 { status: 401 }

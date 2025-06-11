@@ -8,11 +8,10 @@ const RequestViewElement = ({ user }) => {
         setShowAcceptPopup(true);
     }
 
-    function handleFinalAccept() {
+    async function handleFinalAccept() {
         const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         try {
-        
-            const res = fetch("/api/accept-request", {
+            const res = await fetch("/api/accept-request", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -22,17 +21,14 @@ const RequestViewElement = ({ user }) => {
                     userTimeZone: userTimeZone,
                 }),
             });
-            res.then((response) => response.json()).then((data) => {
-                if (data.error) {
-                    alert(data.error);
-                } else {
-                    alert("Request accepted successfully!");
-                    window.location.reload();
-                }
-            });
+            if (res.error) {
+                throw new Error(res.error || "Failed to accept request");
+            }
+            alert("Request accepted successfully!");
+            window.location.reload();
         } catch (error) {
             console.error("Error accepting request:", error);
-            alert("An error occurred while accepting the request.");
+            alert(error || "An error occurred while accepting the request.");
         }
 
         setShowAcceptPopup(false);
@@ -42,9 +38,9 @@ const RequestViewElement = ({ user }) => {
         setShowRejectPopup(true);
     }
 
-    function handleFinalReject() {
+    async function handleFinalReject() {
         try {
-            const res = fetch("/api/reject-request", {
+            const res = await fetch("/api/reject-request", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

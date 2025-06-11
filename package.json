@@ -10,8 +10,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@aws-amplify/ui-react": "^6.11.2",
     "@fast-csv/format": "^5.0.2",
     "@prisma/client": "^6.9.0",
+    "aws-amplify": "^6.15.0",
     "bcrypt": "^6.0.0",
     "concurrently": "^9.1.2",
     "dotenv": "^16.5.0",

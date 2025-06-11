@@ -8,7 +8,6 @@ const prisma = new PrismaClient();
 
 export async function POST(request) {
     try {
-        const reqHeaders = await request.headers;
         const body = await request.json();
         const { id, userTimezone  } = body;
 
@@ -27,6 +26,9 @@ export async function POST(request) {
 
         const encryptedPassword = await encryptPassword(newPassword);
         const validityDate = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000); // 2 days validity
+
+        await sendPasswordMail(pendingUser, newPassword, validityDate, userTimezone);
+        
         const newUser = await prisma.user.create({
             data: {
                 name: pendingUser.name,
@@ -39,7 +41,6 @@ export async function POST(request) {
             },
         });
         
-        await sendPasswordMail(pendingUser, newPassword, validityDate, userTimezone);
 
         await prisma.pendingUser.delete({
             where: { id: id },
