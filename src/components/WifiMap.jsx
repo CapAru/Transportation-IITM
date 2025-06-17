@@ -32,7 +32,7 @@ const WifiMap = ({ sensors }) => {
         sensors.forEach((sensor) => {
             const customIcon = L.divIcon({
                 html: ReactDOMServer.renderToString(
-                    <FaWifi className="bg-blue-500 text-2xl text-white rounded-full p-1 border-2 border-white" />
+                    <FaWifi className="bg-blue-800 text-2xl text-white rounded-full p-1 border-2 border-white" />
                 ),
                 className: "custom-marker",
             });
@@ -61,7 +61,9 @@ const WifiMap = ({ sensors }) => {
         };
     }, [sensors, router]);
 
-    return <div id="map" style={{ height: "500px", width: "800px" }} />;
+    return (
+        <div id="map" style={{ height: `calc(100vh-250px)`, width: "800px" }} />
+    );
 };
 
 export default WifiMap;
