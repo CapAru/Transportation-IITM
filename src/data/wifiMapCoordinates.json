@@ -1,0 +1,242 @@
+[
+    {
+        "id": "101_102",
+        "name": "Tambaram Kadaperi Signal",
+        "lat": 12.930199962264817,
+        "long": 80.12199236477716
+    },
+    {
+        "id": "103_104",
+        "name": "Tambaram MEPZ Signal",
+        "lat": 12.935386475658808,
+        "long": 80.12817217450653
+    },
+    {
+        "id": "105_106",
+        "name": "Tambaram Santorium Signal",
+        "lat": 12.942580493126767,
+        "long": 80.13297869318492
+    },
+    {
+        "id": "107_108",
+        "name": "6th Cross Street (Pallavaram Municipality/Lalitha Jewellery Signal)",
+        "lat": 12.950443484077248,
+        "long": 80.1384718573888
+    },
+    {
+        "id": "109_110",
+        "name": "Saravana Stores Chromepet",
+        "lat": 12.955462284740344,
+        "long": 80.14310671468583
+    },
+    {
+        "id": "111_112",
+        "name": "Thiruneermalai Signal",
+        "lat": 12.961113108391643,
+        "long": 80.1461372388365
+    },
+    {
+        "id": "113_114",
+        "name": "Airport Bus Stop Signal",
+        "lat": 12.979584816863248,
+        "long": 80.16293855174376
+    },
+    {
+        "id": "115_116",
+        "name": "S3 Meenambakkam Police Station Signal",
+        "lat": 12.986021604763208,
+        "long": 80.17471383149442
+    },
+    {
+        "id": "117_118",
+        "name": "St.Thomas Mount Post Office Signal",
+        "lat": 13.000801086667614,
+        "long": 80.1959711768165
+    },
+    {
+        "id": "119_120",
+        "name": "Poonamalle Mainroad",
+        "lat": 13.02132171072297,
+        "long": 80.20626520269288
+    },
+    {
+        "id": "121_122",
+        "name": "Lakshman sruthi Vadapalani",
+        "lat": 13.044491832932465,
+        "long": 80.21348285310334
+    },
+    {
+        "id": "123_124",
+        "name": "Arcot Road Signal",
+        "lat": 13.050370473969581,
+        "long": 80.21158969888053
+    },
+    {
+        "id": "125_126",
+        "name": "Guindy Halda",
+        "lat": 13.01117689569941,
+        "long": 80.222120368995
+    },
+    {
+        "id": "201_202",
+        "name": "Little mount (Pi4)",
+        "lat": 13.011983884840042,
+        "long": 80.22779983166339
+    },
+    {
+        "id": "133",
+        "name": "Jeenis road Panagal Maligai",
+        "lat": 13.019466565938083,
+        "long": 80.2239352076816
+    },
+    {
+        "id": "127_128",
+        "name": "Thadandar Nagar Jones road signal",
+        "lat": 13.02431877829395,
+        "long": 80.22821650565406
+    },
+    {
+        "id": "205_206",
+        "name": "CIT Nagar 1st Main Road (Pi4)",
+        "lat": 13.0253402845741,
+        "long": 80.23206093648648
+    },
+    {
+        "id": "203_204",
+        "name": "Madley Road Signal (Pi4) T-Nagar Bus Depot",
+        "lat": 13.035725359347179,
+        "long": 80.2294397336237
+    },
+    {
+        "id": "134_216",
+        "name": "Nandanam Signal",
+        "lat": 13.031043617347605,
+        "long": 80.23974979797362
+    },
+    {
+        "id": "217",
+        "name": "SIET College",
+        "lat": 13.036065846241181,
+        "long": 80.24647755193035
+    },
+    {
+        "id": "135",
+        "name": "Moopanar Bridge Chambiers road",
+        "lat": 13.02993701084126,
+        "long": 80.24595331136229
+    },
+    {
+        "id": "136",
+        "name": "Kotturpuram Signal",
+        "lat": 13.018104524318625,
+        "long": 80.24158463970096
+    },
+    {
+        "id": "207_208",
+        "name": "Cancer Institute (Pi4)",
+        "lat": 13.007293053465595,
+        "long": 80.24018666516088
+    },
+    {
+        "id": "901_308",
+        "name": "Madhyakailash",
+        "lat": 13.006952527029895,
+        "long": 80.24717653917452
+    },
+    {
+        "id": "307",
+        "name": "1st FOB",
+        "lat": 13.003972900921093,
+        "long": 80.24752603288655
+    },
+    {
+        "id": "305_905",
+        "name": "2nd FOB",
+        "lat": 12.995588200245525,
+        "long": 80.24977800789574
+    },
+    {
+        "id": "306_904",
+        "name": "2nd Avenue instersection",
+        "lat": 12.994194084558558,
+        "long": 80.24973185443531
+    },
+    {
+        "id": "301_907",
+        "name": "3rd FOB",
+        "lat": 12.989112241756334,
+        "long": 80.25120876516927
+    },
+    {
+        "id": "302_902",
+        "name": "Tidel park",
+        "lat": 12.987718089714507,
+        "long": 80.25130107209014
+    },
+    {
+        "id": "304_906",
+        "name": "ECR VMS",
+        "lat": 12.98779104490536,
+        "long": 80.25433547434523
+    },
+    {
+        "id": "138_214",
+        "name": "Jayanthi Theatre Signal",
+        "lat": 12.987925263587103,
+        "long": 80.255575156438
+    },
+    {
+        "id": "210",
+        "name": "MGR Road 2nd Avenue",
+        "lat": 12.99655984634625,
+        "long": 80.25603429795382
+    },
+    {
+        "id": "215",
+        "name": "Murugan stores LB Road",
+        "lat": 13.001257291149757,
+        "long": 80.25644752531808
+    },
+    {
+        "id": "205",
+        "name": "LB Road Adyar Junction",
+        "lat": 13.006759899111247,
+        "long": 80.25777903571401
+    },
+    {
+        "id": "137_213",
+        "name": "Ambika appalam",
+        "lat": 13.006804635261146,
+        "long": 80.25181019600812
+    },
+    {
+        "id": "104",
+        "name": "SRP tools",
+        "lat": 12.980050977966254,
+        "long": 80.25282030739264
+    },
+    {
+        "id": "211",
+        "name": "Periyar Nagar",
+        "lat": 12.981303721909242,
+        "long": 80.24336199242869
+    },
+    {
+        "id": "131",
+        "name": "Keyveli Signal Velachery",
+        "lat": 12.96387804800789,
+        "long": 80.21602427573237
+    },
+    {
+        "id": "130",
+        "name": "Balaji Nagar Velachery",
+        "lat": 12.953452506466242,
+        "long": 80.21198383057498
+    },
+    {
+        "id": "129",
+        "name": "Kamakshi Hospital",
+        "lat": 12.948664665320686,
+        "long": 80.2099636079053
+    }
+]
