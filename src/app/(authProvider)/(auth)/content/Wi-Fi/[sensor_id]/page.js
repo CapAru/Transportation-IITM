@@ -1,5 +1,8 @@
+"use client"
+import { useParams } from "next/navigation";
+
 export default function SensorDataPage({ params }) {
-    const { sensor_id } = params;
+    const { sensor_id } = useParams();
 
     return (
         <div className="p-6">
