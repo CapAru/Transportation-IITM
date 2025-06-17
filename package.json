@@ -13,7 +13,7 @@
     "@aws-amplify/ui-react": "^6.11.2",
     "@aws-amplify/ui-react-core": "^3.4.3",
     "@fast-csv/format": "^5.0.2",
-    "@prisma/client": "^6.9.0",
+    "@prisma/client": "^6.10.0",
     "aws-amplify": "^6.15.0",
     "bcrypt": "^6.0.0",
     "concurrently": "^9.1.2",
@@ -39,7 +39,7 @@
     "@tailwindcss/postcss": "^4",
     "eslint": "^9",
     "eslint-config-next": "15.3.2",
-    "prisma": "^6.9.0",
+    "prisma": "^6.10.0",
     "tailwindcss": "^4"
   }
 }
