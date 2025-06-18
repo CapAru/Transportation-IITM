@@ -55,3 +55,13 @@ model device111_112_merged {
   rssi      Decimal?  @db.Decimal(6, 2)
   timestamp DateTime? @db.Timestamp(6)
 }
+
+model sample_gps {
+  id              Int      @id
+  time            String?  @db.VarChar(10)
+  date            String?  @db.VarChar(10)
+  latitude        Decimal? @db.Decimal(9, 6)
+  longitude       Decimal? @db.Decimal(9, 6)
+  speed           Decimal? @db.Decimal(5, 2)
+  signal_strength Int?
+}

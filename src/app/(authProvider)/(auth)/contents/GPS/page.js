@@ -1,7 +1,10 @@
+import GPSMap from "@/components/GPSMap";
+
 export default function GPSPage() {
     return (
-        <div className="p-6">
-            <h1 className="text-4xl font-bold mb-6">Global Positioning System (GPS) Data</h1>
+        <div className="px-6">
+            <h1 className="text-3xl font-bold mb-6">Global Positioning System (GPS) Data</h1>
+            <GPSMap />
         </div>
     );
 }
