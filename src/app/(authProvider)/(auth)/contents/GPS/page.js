@@ -30,13 +30,13 @@ export default function GPSPage() {
             <h1 className="text-3xl font-bold mb-6">
                 Global Positioning System (GPS) Data
             </h1>
-            <div className="flex">
+            <div className="flex justify-evenly">
                 <GPSMap mapData={mapData} />
-                <div className="py-4 px-6 h-[calc(100vh-250px)] overflow-y-auto border border-gray-300 rounded-lg">
+                <div className="py-4 px-6 h-[calc(100vh-250px)] w-[300px] overflow-y-auto border border-gray-300 rounded-lg">
                     <ul>
                         {gpsBusRoutes.map((route) => (
                             <li key={route} className="my-2">
-                                <button onClick={handleClick(route)}>
+                                <button onClick={handleClick(route)} className="text-blue-600 hover:underline hover:cursor-pointer w-full text-left">
                                     {route}
                                 </button>
                             </li>

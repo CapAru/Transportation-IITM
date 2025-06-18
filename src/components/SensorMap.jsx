@@ -65,7 +65,15 @@ const SensorMap = ({ sensors, name }) => {
     }, [sensors, name, router]);
 
     return (
-        <div id="map" style={{ height: `calc(100vh-250px)`, width: "800px" }} />
+        <div
+            id="map"
+            style={{
+                height: `calc(100vh-250px)`,
+                width: "800px",
+                border: "1px solid #ccc",
+                borderRadius: "8px",
+            }}
+        />
     );
 };
 
