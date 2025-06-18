@@ -5,34 +5,13 @@ import "leaflet/dist/leaflet.css";
 import { MdLocationPin } from "react-icons/md";
 import ReactDOMServer from "react-dom/server";
 
-const GPSMap = () => {
+const GPSMap = ({ mapData }) => {
     const mapRef = useRef(null);
     const mapInstanceRef = useRef(null);
-    const [mapData, setMapData] = React.useState([]);
     const pathLayerRef = useRef(null);
+    const markersRef = useRef([]); // Track all markers
 
     useEffect(() => {
-        // Initialize map only once
-        async function initializeMap() {
-            try {
-                const data = await fetch("/api/GPS", {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                });
-                if (!data.ok) {
-                    console.error("Failed to fetch GPS data");
-                    return;
-                }
-                const fetchedData = await data.json();
-                setMapData(fetchedData);
-            } catch (error) {
-                console.error("Error fetching GPS data:", error);
-            }
-        }
-        initializeMap();
-
         if (!mapInstanceRef.current) {
             // Initialize the map
             mapInstanceRef.current = L.map(mapRef.current).setView(
@@ -59,13 +38,19 @@ const GPSMap = () => {
 
     // Separate useEffect to handle mapData changes
     useEffect(() => {
-        console.log("Data fetched:", mapData);
+        console.log("Data received:", mapData);
 
-        if (mapData.length > 0 && mapInstanceRef.current) {
+        if (mapData && mapData.length > 0 && mapInstanceRef.current) {
             // Clear existing path if any
             if (pathLayerRef.current) {
                 mapInstanceRef.current.removeLayer(pathLayerRef.current);
             }
+
+            // Clear existing markers
+            markersRef.current.forEach((marker) => {
+                mapInstanceRef.current.removeLayer(marker);
+            });
+            markersRef.current = [];
 
             // Sort data by timestamp if available, otherwise use array order
             // const sortedData = [...mapData].sort((a, b) => {
@@ -77,19 +62,6 @@ const GPSMap = () => {
 
             // Create array of coordinates for the path with better filtering
             const pathCoordinates = mapData
-                .filter((point) => {
-                    // More robust coordinate validation
-                    const lat = parseFloat(point.latitude);
-                    const lng = parseFloat(point.longitude);
-                    return (
-                        !isNaN(lat) &&
-                        !isNaN(lng) &&
-                        lat >= 10 &&
-                        lat <= 15 && // Filter for latitudes between 10 and 15
-                        lng >= 75 &&
-                        lng <= 85
-                    );
-                })
                 .map((point) => [
                     parseFloat(point.latitude),
                     parseFloat(point.longitude),
@@ -143,17 +115,20 @@ const GPSMap = () => {
                     popupAnchor: [0, -32], // Popup appears above the marker
                 });
 
-                L.marker(startCoord, { icon: startIcon })
+                const startMarker = L.marker(startCoord, { icon: startIcon })
                     .addTo(mapInstanceRef.current)
                     .bindPopup(
                         `Start Point<br>Lat: ${startCoord[0]}<br>Lng: ${startCoord[1]}`
                     );
 
-                L.marker(endCoord, { icon: endIcon })
+                const endMarker = L.marker(endCoord, { icon: endIcon })
                     .addTo(mapInstanceRef.current)
                     .bindPopup(
                         `End Point<br>Lat: ${endCoord[0]}<br>Lng: ${endCoord[1]}`
                     );
+
+                // Track markers for cleanup
+                markersRef.current.push(startMarker, endMarker);
 
                 // Fit map bounds to show the entire path
                 mapInstanceRef.current.fitBounds(polyline.getBounds(), {
