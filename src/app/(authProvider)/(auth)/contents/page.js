@@ -37,7 +37,7 @@ export default function Contents() {
     const buttonElements = data.map((item, index) => (
         <Link
             key={index}
-            href={`/content/${item.shortName}`}
+            href={`/contents/${item.shortName}`}
             className="group bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 w-full border border-blue-400/20"
         >
             <div className="text-center">

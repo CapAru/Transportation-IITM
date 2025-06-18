@@ -52,7 +52,7 @@ const SensorMap = ({ sensors, name }) => {
             marker.on("mouseover", () => marker.openPopup());
             marker.on("mouseout", () => marker.closePopup());
             marker.on("click", () =>
-                router.push(`/content/${name}/${sensor.id}`)
+                router.push(`/contents/${name}/${sensor.id}`)
             );
         });
         // Automatically fit the map to show all markers

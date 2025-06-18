@@ -87,7 +87,7 @@ export default function UserDashboard() {
                 {/* Add more user details as needed */}
             </div>
             <Link
-                href="/content"
+                href="/contents"
                 className="mt-6 bg-blue-700 text-white py-2 px-4 rounded-lg hover:bg-blue-500 transition-colors"
             >
                 <div>Explore Contents</div>

@@ -36,7 +36,7 @@ export default function NavBar() {
                                 Home
                             </Link>
                             <Link
-                                href="/content"
+                                href="/contents"
                                 className="text-gray-600 hover:text-blue-600 hover:bg-gray-100 px-4 py-2 rounded-md font-medium transition-colors duration-200"
                             >
                                 Contents
@@ -87,7 +87,7 @@ export default function NavBar() {
                         Home
                     </Link>
                     <Link
-                        href="/content"
+                        href="/contents"
                         className="text-gray-600 hover:text-blue-600 hover:bg-gray-100 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
                         onClick={() => setIsMenuOpen(false)}
                     >
