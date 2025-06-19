@@ -1,12 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "@aws-amplify/ui-react/styles.css";
 import { Loader } from "@aws-amplify/ui-react";
+import { CiCalendar, CiCircleInfo } from "react-icons/ci";
 
 const ExtensionViewElement = ({ user }) => {
     const [showAcceptPopup, setShowAcceptPopup] = useState(false);
     const [showRejectPopup, setShowRejectPopup] = useState(false);
     const [isAcceptLoading, setIsAcceptLoading] = useState(false);
     const [isRejectLoading, setIsRejectLoading] = useState(false);
+    const [showDetails, setShowDetails] = useState(false);
     const [toast, setToast] = useState({ show: false, message: "", type: "" });
 
     const showToast = (message, type = "success") => {
@@ -102,6 +104,10 @@ const ExtensionViewElement = ({ user }) => {
         }
     };
 
+    useEffect(() => {
+        console.log(showDetails);
+    }, [showDetails]);
+
     return (
         <>
             {/* Toast Notification */}
@@ -137,90 +143,102 @@ const ExtensionViewElement = ({ user }) => {
                         />
                     </div>
                 </div>
-            )}
-
-            <div className="flex flex-col sm:flex-row justify-between items-center w-full py-4 px-4 sm:px-8 m-1 bg-amber-200 rounded-3xl hover:bg-amber-300 transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1">
-                <div className="flex flex-col w-full sm:flex-grow sm:mr-8 mb-4 sm:mb-0">
-                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                        <h2 className="text-xl font-bold transition-colors duration-300 text-gray-800">
-                            {user.name}
-                        </h2>
-                        <p className="text-base mt-1 sm:mt-0 hover:text-blue-700 transition-colors cursor-pointer text-gray-700">
-                            {user.email}
+            )}{" "}
+            <div className="flex flex-col items-center w-full bg-amber-100 rounded-3xl">
+                <div
+                    className="flex flex-col sm:flex-row justify-between items-center w-full py-4 px-4 sm:px-8 bg-amber-200 rounded-3xl hover:bg-amber-300 transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1 cursor-pointer"
+                    onClick={() => setShowDetails(!showDetails)}
+                >
+                    <div className="flex flex-col w-full sm:flex-grow sm:mr-8 mb-4 sm:mb-0">
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                            <h2 className="text-xl font-bold transition-colors duration-300 text-gray-800">
+                                {user.name}
+                            </h2>
+                            <p className="text-base mt-1 sm:mt-0 hover:text-blue-700 transition-colors cursor-pointer text-gray-700">
+                                {user.email}
+                            </p>
+                        </div>
+                        <p className="text-base mt-2 text-gray-700">
+                            {user.college}
                         </p>
                     </div>
-                    <p className="text-base mt-2 text-gray-700">
-                        {user.college}
-                    </p>
-
-                    {/* Extension Details Section */}
-                    <div className="mt-3 p-3 bg-white/50 rounded-xl border border-amber-300">
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                            <div className="flex items-center">
-                                <svg
-                                    className="w-4 h-4 mr-2 text-amber-600"
-                                    fill="currentColor"
-                                    viewBox="0 0 20 20"
-                                >
-                                    <path
-                                        fillRule="evenodd"
-                                        d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                                        clipRule="evenodd"
-                                    />
-                                </svg>
-                                <span className="text-sm font-semibold text-gray-700">
-                                    Extension Until:
-                                </span>
-                            </div>
-                            <span className="text-sm font-medium text-amber-800 bg-amber-100 px-2 py-1 rounded-lg">
+                    <div
+                        className="flex items-center gap-2 whitespace-nowrap w-full sm:w-auto"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="flex flex-col items-center my-2 sm:my-0 sm:mx-5 w-full sm:w-auto bg-amber-100 px-3 py-1 rounded-lg">
+                            <p className="text-base font-semibold text-gray-700">
+                                Extension Until
+                            </p>
+                            <span className="text-blue-900 font-medium">
                                 {formatDate(user.extensionDate)}
                             </span>
                         </div>
-
-                        {user.reason && (
-                            <div className="mt-3 pt-3 border-t border-amber-300">
-                                <div className="flex items-start">
-                                    <svg
-                                        className="w-4 h-4 mr-2 mt-0.5 text-amber-600 flex-shrink-0"
-                                        fill="currentColor"
-                                        viewBox="0 0 20 20"
-                                    >
-                                        <path
-                                            fillRule="evenodd"
-                                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                                            clipRule="evenodd"
-                                        />
-                                    </svg>
-                                    <div className="flex-1">
-                                        <span className="text-sm font-semibold text-gray-700">
-                                            Reason:
-                                        </span>
-                                        <p className="text-sm text-gray-600 mt-1 leading-relaxed">
-                                            {user.reason}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
+                        <button
+                            onClick={handleAcceptClick}
+                            className="bg-green-700 py-2 px-4 sm:py-3 sm:px-6 rounded-2xl text-white text-base w-full sm:w-auto hover:bg-green-600 transition-all duration-300 transform hover:scale-105 hover:shadow-md active:outline-none active:ring-2 active:ring-green-500 cursor-pointer"
+                        >
+                            Accept Request
+                        </button>
+                        <button
+                            onClick={handleReject}
+                            className="bg-red-500 py-2 px-4 sm:py-3 sm:px-6 rounded-2xl text-white text-base w-full sm:w-auto mt-2 sm:mt-0 hover:bg-red-600 transition-all duration-300 transform hover:scale-105 hover:shadow-md active:outline-none active:ring-2 active:ring-red-400 cursor-pointer"
+                        >
+                            Reject Request
+                        </button>
                     </div>
                 </div>
+                {/* Extension Details Section - Only show when showDetails is true */}
+                <div
+                    className={`overflow-hidden w-full transition-all duration-500 ease-in-out ${
+                        showDetails
+                            ? "max-h-96 opacity-100"
+                            : "max-h-0 opacity-0"
+                    }`}
+                >
+                    <div
+                        className={`w-full px-4 py-4 transform transition-all duration-500 ease-in-out ${
+                            showDetails ? "translate-y-0" : "-translate-y-4"
+                        }`}
+                    >
+                        <div className="flex flex-col md:flex-row md:items-center gap-0 p-4 bg-amber-50 rounded-xl border border-amber-200">
+                            {/* Extension Until Section */}
+                            <div className="flex-shrink-0 flex items-center justify-center md:justify-start gap-2 pb-3 md:pb-0 md:pr-6">
+                                <div className="flex items-center justify-center rounded-full">
+                                    <CiCalendar className="text-amber-600 text-xl flex-shrink-0 mb-1" />
+                                </div>
+                                <span className="text-sm font-semibold text-gray-700">
+                                    Extension Until:
+                                </span>
+                                <span className="text-sm font-medium text-amber-800 bg-amber-100 px-3 py-1 rounded-lg border border-amber-300">
+                                    {formatDate(user.extensionDate)}
+                                </span>
+                            </div>
 
-                <div className="flex flex-col items-center gap-2 whitespace-nowrap w-full sm:w-auto">
-                    <button
-                        onClick={handleAcceptClick}
-                        className="bg-green-700 py-2 px-4 sm:py-3 sm:px-6 rounded-2xl text-white text-base w-full sm:w-auto hover:bg-green-600 transition-all duration-300 transform hover:scale-105 hover:shadow-md active:outline-none active:ring-2 active:ring-green-500 cursor-pointer"
-                    >
-                        Accept Request
-                    </button>
-                    <button
-                        onClick={handleReject}
-                        className="bg-red-500 py-2 px-4 sm:py-3 sm:px-6 rounded-2xl text-white text-base w-full sm:w-auto mt-2 sm:mt-0 hover:bg-red-600 transition-all duration-300 transform hover:scale-105 hover:shadow-md active:outline-none active:ring-2 active:ring-red-400 cursor-pointer"
-                    >
-                        Reject Request
-                    </button>
+                            {/* Vertical Separator */}
+                            <div className="hidden md:block w-px bg-amber-300 mx-4 self-stretch"></div>
+
+                            {/* Horizontal Separator for Mobile */}
+                            <div className="md:hidden w-full h-px bg-amber-300 my-2"></div>
+
+                            {/* Reason Section */}
+                            <div className="flex-1 flex items-center gap-2 pt-3 md:pt-0 md:pl-6">
+                                <div className="flex items-center justify-center rounded-full">
+                                    <CiCircleInfo className="text-amber-600 mb-1 text-xl flex-shrink-0" />
+                                </div>
+                                <div className="flex flex-col sm:flex-row sm:items-baseline gap-2">
+                                    <span className="text-sm font-semibold text-gray-700 flex-shrink-0">
+                                        Reason:
+                                    </span>
+                                    <p className="text-sm text-gray-600">
+                                        {user.reason}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-
             {/* Accept Request Confirmation Popup */}
             {showAcceptPopup && (
                 <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
@@ -287,7 +305,6 @@ const ExtensionViewElement = ({ user }) => {
                     </div>
                 </div>
             )}
-
             {/*Reject Request Confirmation Popup*/}
             {showRejectPopup && (
                 <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
