@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import sendExtensionAcceptanceEmail from "@/lib/Mails/ExtensionAccept";
 const prisma = new PrismaClient();
 
 export async function POST(request) {
@@ -14,6 +15,12 @@ export async function POST(request) {
         });
         if (!extensionItem) {
             return NextResponse.json({ error: "Extension request not found" }, { status: 404 });
+        }
+
+        const mailResponse = await sendExtensionAcceptanceEmail(email, extensionItem.name, extensionItem.extensionDate);
+        
+        if (!mailResponse.success) {
+            return NextResponse.json({ error: "Failed to send acceptance email" }, { status: 500 });
         }
         // Delete the extension request
         await prisma.extensionRequest.delete({
