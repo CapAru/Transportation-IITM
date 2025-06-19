@@ -5,6 +5,7 @@ import UserView from "@/components/UserView";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import PastView from "@/components/PastView";
+import ExtensionView from "@/components/ExtensionView";
 
 export default function Admin() {
     // Start with a default value for server-side rendering
@@ -165,6 +166,16 @@ export default function Admin() {
                         >
                             Past Users
                         </button>
+                        <button
+                            className={`${
+                                view === "extension"
+                                    ? "bg-blue-900 text-white"
+                                    : "bg-transparent text-blue-900"
+                            } text-left text-lg py-3 px-4 hover:bg-blue-900 hover:text-white transition-colors`}
+                            onClick={handleView("extension")}
+                        >
+                            Extension Requests
+                        </button>
                     </div>
                 </div>
             )}
@@ -208,6 +219,16 @@ export default function Admin() {
                 >
                     Past Users
                 </button>
+                <button
+                    className={`${
+                        view === "extension"
+                            ? "bg-blue-900 text-white"
+                            : "bg-transparent"
+                    } text-blue-900 text-left text-2xl py-4 px-8 rounded-r-full w-full cursor-pointer hover:bg-blue-900 hover:text-white transition-colors mt-2`}
+                    onClick={handleView("extension")}
+                >
+                    Extension Requests
+                </button>
             </div>
 
             {/* Main Content */}
@@ -216,9 +237,9 @@ export default function Admin() {
                     <RequestView />
                 ) : view === "users" ? (
                     <UserView />
-                ) : (
+                ) : view === "past" ? (
                     <PastView />
-                )}
+                ) : <ExtensionView />}
             </div>
         </div>
     );

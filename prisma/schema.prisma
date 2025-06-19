@@ -22,17 +22,18 @@ model PendingUser {
 }
 
 model User {
-  id           String    @id @default(cuid())
-  name         String
-  email        String    @unique
-  college      String
-  password     String
-  createdAt    DateTime  @default(now())
-  validity     DateTime?
-  accessToken  String
-  refreshToken String
-  isAdmin      Boolean   @default(false)
-  Session      Session[]
+  id               String             @id @default(cuid())
+  name             String
+  email            String             @unique
+  college          String
+  password         String
+  createdAt        DateTime           @default(now())
+  validity         DateTime?
+  accessToken      String
+  refreshToken     String
+  isAdmin          Boolean            @default(false)
+  Session          Session[]
+  ExtensionRequest ExtensionRequest[]
 }
 
 model Session {
@@ -54,19 +55,30 @@ model PastUser {
   expiredOn DateTime
 }
 
+model ExtensionRequest {
+  id            String    @id @default(cuid())
+  user          User      @relation(fields: [email], references: [email])
+  email         String    @unique
+  name          String
+  college       String
+  reason        String
+  createdAt     DateTime  @default(now())
+  extensionDate DateTime?
+}
+
 model SampleData {
-  id        Int     @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   LogTime   DateTime
   Pkt_Hdr   String
   RSU_ID    Int
   OBU_ID    Int
   PktType   Int
   PktLen    Int
-  TimeIST   String @map("Time(IST)")
+  TimeIST   String   @map("Time(IST)")
   GPSValid  String
   Latitude  Float
   Longitude Float
-  DateIST   String @map("Date(IST)")
+  DateIST   String   @map("Date(IST)")
   Accel_X   Float
   Accel_Y   Float
   Accel_Z   Float
