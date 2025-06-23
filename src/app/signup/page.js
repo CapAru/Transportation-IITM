@@ -15,7 +15,7 @@ export default function Signup() {
     const [success, setSuccess] = useState("");
     const [isCompleted, setIsCompleted] = useState(false); // Add completion state
     const router = useRouter();
-
+    const [loading, setLoading] = useState(true); // Add loading state for the form
     useEffect(() => {
         async function fetchUserData() {
             const res = await fetch("/api/user", {
@@ -34,6 +34,7 @@ export default function Signup() {
         }
 
         fetchUserData();
+        setLoading(false); // Set loading to false after fetching user data
     }, []);
 
     useEffect(() => {
@@ -88,6 +89,16 @@ export default function Signup() {
                 setIsLoading(false);
             });
     }
+
+    // Show loading state while fetching user data
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-white flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+            </div>
+        );
+    }
+
 
     return (
         <div className="flex items-center min-h-screen w-full">

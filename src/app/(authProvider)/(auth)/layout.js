@@ -42,7 +42,13 @@ export default function AuthLayout({ children }) {
 
     const pathname = usePathname();
 
-    if (isLoading) return <p>Loading authentication...</p>;
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-white flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+            </div>
+        );
+    }
 
     if (error) {
         return <p>Redirecting...</p>;
@@ -53,7 +59,9 @@ export default function AuthLayout({ children }) {
     return (
         <>
             {userLoading ? (
-                <p>Loading user data...</p>
+                <div className="min-h-screen bg-white flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+                </div>
             ) : userData ? (
                 <>
                     {pathname !== "/admin" && <NavBar />}
