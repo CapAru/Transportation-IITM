@@ -1,6 +1,12 @@
 import SensorMap from "@/components/SensorMap";
 import SensorList from "@/components/SensorList";
 import rsuSensors from "@/data/rsuMapCoordinates";
+
+export const metadata = {
+    title: "RSU Data",
+    description: "Explore Road-side Unit (RSU) data and sensor locations.",
+};
+
 export default function RSUPage() {
 
     return (

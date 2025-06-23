@@ -2,6 +2,11 @@ import SensorList from "@/components/SensorList";
 import SensorMap from "@/components/SensorMap";
 import sensors from "@/data/wifiMapCoordinates"; // Adjust the path as necessary
 
+export const metadata = {
+    title: "Wi-Fi Data",
+    description: "Explore Wi-Fi data and sensor locations.",
+};
+
 export default function WiFiPage() {
     return (
         <div className="px-6">

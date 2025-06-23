@@ -44,8 +44,8 @@ export async function GET() {
     });
 
     if (!user?.isAdmin && new Date(user.validity) < new Date()) {
-        await prisma.session.delete({
-            where: { id: session.id },
+        await prisma.session.deleteMany({
+            where: { userId: payload.uid },
         });
 
         await prisma.user.delete({

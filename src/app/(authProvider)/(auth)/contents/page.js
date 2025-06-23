@@ -1,8 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect } from "react";
 
 export default function Contents() {
+    useEffect(() => {
+        document.title = "Available Data - Transportation System";
+        document.description = "Explore various transportation datasets including GPS, Wi-Fi, RSU, and OBU data.";
+    }, []);
     const data = [
         {
             index: 1,

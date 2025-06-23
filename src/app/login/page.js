@@ -26,7 +26,7 @@ export default function Login() {
                 const data = await res.json();
                 if (data.user) {
                     setLoggedIn(true);
-                    setPath(data.user.isAdmin ? "/admin" : "/user/dashboard");
+                    setPath(data.user.isAdmin ? "/admin" : "/contents");
                 }
             }
         }
@@ -76,7 +76,7 @@ export default function Login() {
                 } else if (data.isAdmin) {
                     window.location.href = "/admin";
                 } else {
-                    window.location.href = "/user/dashboard";
+                    window.location.href = "/contents";
                 }
                 // Don't set loading to false here since we're redirecting
             })

@@ -36,8 +36,8 @@ export default function ContentBreadcrumb() {
     // Add Home link
     breadcrumbs.push(
         <li key="home">
-            <Link href="/user/dashboard" className="hover:text-blue-600">
-                Dashboard
+            <Link href="/contents" className="hover:text-blue-600">
+                Contents
             </Link>
         </li>
     );
@@ -46,6 +46,9 @@ export default function ContentBreadcrumb() {
     menu.forEach((dir, index) => {
         currentPath += `/${dir}`;
 
+        if (dir === "contents") {
+            return;
+        }
         breadcrumbs.push(
             <li key={`separator-${index}`}>
                 <MdChevronRight className="text-gray-400 mx-1" />

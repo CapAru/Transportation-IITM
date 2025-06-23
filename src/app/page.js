@@ -1,5 +1,10 @@
 import Link from "next/link";
 
+export const metadata = {
+    title: "TDMS - Home",
+    description: "Welcome to the Transport Data Management System",
+};
+
 export default function Home() {
     return (
         <>

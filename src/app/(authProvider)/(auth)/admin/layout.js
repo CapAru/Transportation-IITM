@@ -1,5 +1,14 @@
 "use client"
+
+import { useEffect } from "react";
+
 export default function RootLayout({ children }) {
+
+    useEffect(() => {
+        document.title = "Admin Dashboard";
+        document.description = "Admin Dashboard for Transport Data Management System";
+    }, [])
+
     return (
         <div>
             <style jsx global>{`

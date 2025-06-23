@@ -3,6 +3,10 @@ import TableComponent from "@/components/TableComponent";
 import { useEffect, useState } from "react";
 
 export default function OBUPage() {
+    useEffect(() => {
+        document.title = "OBU Data";
+        document.description = "Explore On-Board Unit (OBU) data.";
+    }, []);
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);

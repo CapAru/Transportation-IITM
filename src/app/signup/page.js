@@ -28,7 +28,7 @@ export default function Signup() {
                 const data = await res.json();
                 if (data.user) {
                     setLoggedIn(true);
-                    setPath(data.user.isAdmin ? "/admin" : "/user/dashboard");
+                    setPath(data.user.isAdmin ? "/admin" : "/contents");
                 }
             }
         }
