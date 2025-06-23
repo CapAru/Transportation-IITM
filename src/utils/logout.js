@@ -11,8 +11,7 @@ const handleLogout = async () => {
             throw new Error("Logout failed");
         }
 
-        // Redirect to login page after successful logout
-        window.location.href = "/login";
+        window.location.href = "/";
     } catch (err) {
         console.error("Error during logout:", err);
         alert("An error occurred while logging out.");
