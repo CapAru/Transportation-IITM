@@ -9,6 +9,11 @@ export default function Home() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        document.title = "TDMS - Home";
+        document.description =
+            "Welcome to the Transport Data Management System. Access transportation data and analytics at IIT Madras.";
+    })
+    useEffect(() => {
         // Check if user is logged in
         async function checkAuthStatus() {
             try {
@@ -76,12 +81,6 @@ export default function Home() {
                             className="text-gray-600 hover:text-blue-600 transition-colors font-medium"
                         >
                             Profile
-                        </Link>
-                        <Link
-                            href="/admin"
-                            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                        >
-                            Admin
                         </Link>
                     </div>
                 ) : (
