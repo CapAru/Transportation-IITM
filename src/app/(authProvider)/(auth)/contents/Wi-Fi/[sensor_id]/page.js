@@ -1,7 +1,9 @@
 "use client";
 import TableComponent from "@/components/TableComponent";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Loader } from "@aws-amplify/ui-react";
+import "@aws-amplify/ui-react/styles.css";
 
 export default function SensorDataPage() {
     const { sensor_id } = useParams();
@@ -17,6 +19,11 @@ export default function SensorDataPage() {
     // Generate years (current year and previous 7 years)
     const currentYear = new Date().getFullYear();
     const years = Array.from({ length: 8 }, (_, i) => currentYear - i);
+
+    useEffect(() => {
+        document.title = `Wi-Fi Data - ${sensor_id}`;
+        document.description = `View and manage sensor data for ${sensor_id}.`;
+    }, [sensor_id]);
 
     // Generate months
     const months = [
@@ -168,9 +175,15 @@ export default function SensorDataPage() {
                         >
                             {loading ? "Loading..." : "Load Data"}
                         </button>
-                    </form>
-                    <button onClick={handleDownload} disabled={downloading} className="bg-yellow-300 px-6 py-2 rounded-md hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-300 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed hover:cursor-pointer transition duration-200 w-full sm:w-auto lg:w-auto">
-                        {downloading ? "Downloading..." : "Download CSV"}
+                    </form>                    <button onClick={handleDownload} disabled={downloading} className="bg-yellow-300 px-6 py-2 rounded-md hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-300 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed hover:cursor-pointer transition duration-200 w-full sm:w-auto lg:w-auto flex items-center justify-center">
+                        {downloading ? (
+                            <>
+                                <span className="mr-2">Downloading...</span>
+                                <Loader filledColor="orange" emptyColor="black"/>
+                            </>
+                        ) : (
+                            "Download CSV"
+                        )}
                     </button>
                 </div>
             </div>

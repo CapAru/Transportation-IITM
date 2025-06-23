@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FiMail, FiLock, FiX } from "react-icons/fi";
+import { FiMail, FiX } from "react-icons/fi";
 import { BiBookBookmark } from "react-icons/bi";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Loader } from "@aws-amplify/ui-react";
+import "@aws-amplify/ui-react/styles.css";
 
 export default function ProfilePage() {
     const router = useRouter();
@@ -16,8 +17,8 @@ export default function ProfilePage() {
         extensionDate: "",
         reason: "",
     });
-
-    useEffect(() => {
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [toast, setToast] = useState({ show: false, message: "", type: "" });    useEffect(() => {
         async function fetchUserData() {
             try {
                 const res = await fetch("/api/user", {
@@ -44,6 +45,13 @@ export default function ProfilePage() {
         fetchUserData();
     }, []);
 
+    const showToast = (message, type = "success") => {
+        setToast({ show: true, message, type });
+        setTimeout(() => {
+            setToast({ show: false, message: "", type: "" });
+        }, 3000);
+    };
+
     useEffect(() => {
         if (error || (!loading && (!userData || !userData?.user))) {
             router.push("/access-denied");
@@ -53,10 +61,10 @@ export default function ProfilePage() {
     const handleExtenstionPopup = () => {
         setExtensionPopup(true);
     };
-
     const closeExtensionPopup = () => {
         setExtensionPopup(false);
         setExtensionData({ extensionDate: "", reason: "" });
+        setIsSubmitting(false);
     };
 
     const handleInputChange = (e) => {
@@ -65,15 +73,15 @@ export default function ProfilePage() {
             ...prev,
             [name]: value,
         }));
-    };
-
-    const handleExtension = async (e) => {
+    };    const handleExtension = async (e) => {
         e.preventDefault();
 
         if (!extensionData.extensionDate || !extensionData.reason.trim()) {
-            alert("Please fill in both the extension date and reason.");
+            showToast("Please fill in both the extension date and reason.", "error");
             return;
         }
+
+        setIsSubmitting(true);
 
         try {
             const res = await fetch("/api/user/extension", {
@@ -94,21 +102,19 @@ export default function ProfilePage() {
                 throw new Error(
                     data.error || `Failed to request extension: ${res.status}`
                 );
-            }
-
-            if (data.success) {
-                alert("Extension request sent successfully!");
+            }            if (data.success) {
                 closeExtensionPopup();
+                setTimeout(() => {
+                    showToast("Extension request sent successfully!", "success");
+                }, 300);
             } else {
-                alert(
-                    "Failed to send extension request. Please try again later."
-                );
+                showToast("Failed to send extension request. Please try again later.", "error");
             }
         } catch (err) {
             console.error("Error requesting extension:", err);
-            alert(
-                "An error occurred while requesting extension. Please try again later."
-            );
+            showToast("An error occurred while requesting extension. Please try again later.", "error");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -135,9 +141,67 @@ export default function ProfilePage() {
         year: "numeric",
         month: "long",
         day: "numeric",
-    });
+    });    
     return (
-        <div className="py-4 sm:py-6 lg:py-10">
+        <>
+            {/* Toast Notification */}
+            {toast.show && (
+                <>
+                    <style jsx>{`
+                        @keyframes slideInFromTop {
+                            0% {
+                                opacity: 0;
+                                transform: translateX(-50%) translateY(-20px);
+                            }
+                            100% {
+                                opacity: 1;
+                                transform: translateX(-50%) translateY(0);
+                            }
+                        }
+                        @keyframes shrinkProgress {
+                            0% {
+                                width: 100%;
+                            }
+                            100% {
+                                width: 0%;
+                            }
+                        }
+                    `}</style>
+                    <div
+                        className={`fixed top-4 left-1/2 z-50 rounded-lg shadow-lg text-white font-medium overflow-hidden ${
+                            toast.type === "error" ? "bg-red-500" : "bg-green-500"
+                        }`}
+                        style={{
+                            transform: "translateX(-50%)",
+                            animation: "slideInFromTop 0.5s ease-out",
+                        }}
+                    >
+                        <div className="px-6 py-3">{toast.message}</div>
+                        {/* Loading bar */}
+                        <div
+                            className={`w-full h-1 ${
+                                toast.type === "error"
+                                    ? "bg-red-600"
+                                    : "bg-green-600"
+                            } bg-opacity-20`}
+                        >
+                            <div
+                                className={`h-full ${
+                                    toast.type === "error"
+                                        ? "bg-red-400"
+                                        : "bg-green-400"
+                                }  bg-opacity-80`}
+                                style={{
+                                    width: "100%",
+                                    animation: "shrinkProgress 3s linear",
+                                }}
+                            />
+                        </div>
+                    </div>
+                </>
+            )}
+
+            <div className="py-4 sm:py-6 lg:py-10">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
@@ -268,7 +332,6 @@ export default function ProfilePage() {
                                     required
                                 />
                             </div>
-
                             <div>
                                 <label
                                     htmlFor="reason"
@@ -286,27 +349,40 @@ export default function ProfilePage() {
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                                     required
                                 />
-                            </div>
-
+                            </div>{" "}
                             <div className="flex gap-3 pt-4">
                                 <button
                                     type="button"
                                     onClick={closeExtensionPopup}
                                     className="flex-1 px-4 py-2 text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+                                    disabled={isSubmitting}
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="flex-1 px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
+                                    disabled={isSubmitting}
+                                    className={`flex-1 px-4 py-2 text-white rounded-md transition-colors flex items-center justify-center ${
+                                        isSubmitting
+                                            ? "bg-blue-400 cursor-not-allowed"
+                                            : "bg-blue-600 hover:bg-blue-700"
+                                    }`}
                                 >
-                                    Submit Request
+                                    {isSubmitting ? (
+                                        <>
+                                            <span className="mr-2">
+                                                Submitting...
+                                            </span>
+                                            <Loader filledColor="blue" />
+                                        </>
+                                    ) : "Submit Request"}
                                 </button>
                             </div>
                         </form>
                     </div>
                 </div>
             )}
-        </div>
+            </div>
+        </>
     );
 }
