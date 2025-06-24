@@ -77,7 +77,7 @@ export default function Login() {
                 } else if (data.isAdmin) {
                     window.location.href = "/admin";
                 } else {
-                    window.location.href = "/contents";
+                    window.location.href = "/";
                 }
                 // Don't set loading to false here since we're redirecting
             })

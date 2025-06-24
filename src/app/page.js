@@ -52,14 +52,9 @@ export default function Home() {
     return (
         <div className="min-h-screen bg-white">
             {/* Navigation */}
-            <nav className="flex justify-between items-center p-6 lg:px-12 bg-white shadow-sm">
-                <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                        <span className="text-white font-bold text-xl">T</span>
-                    </div>
-                    <span className="text-gray-900 font-bold text-xl">
-                        TDMS
-                    </span>
+            <nav className="flex justify-between items-center px-6 py-4 lg:px-12 bg-white shadow-sm">
+                <div className="flex items-center">
+                    <img src="/IIT_Madras_Logo.svg" width={"50px"} />
                 </div>
 
                 {isLoggedIn ? (
@@ -412,16 +407,11 @@ export default function Home() {
             )}
 
             {/* Footer */}
-            <footer className="bg-gray-900 text-white py-12">
+            <footer className="bg-gray-900 text-white py-8">
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="flex flex-col md:flex-row justify-between items-center">
-                        <div className="flex items-center space-x-3 mb-4 md:mb-0">
-                            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                                <span className="text-white font-bold">T</span>
-                            </div>
-                            <span className="text-white font-semibold">
-                                TDMS
-                            </span>
+                        <div className="flex items-center">
+                            <img src="/IIT_Madras_Logo.svg" width={"50px"} />
                         </div>
                         <div className="flex space-x-8">
                             {!isLoggedIn && (
