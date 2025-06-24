@@ -3,7 +3,7 @@ import transportDb from "@/lib/transportClient";
 import { format } from "@fast-csv/format";
 
 export async function GET(request, { params }) {
-    const { gps_id } = params;
+    const { gps_id } = await params;
     const tableName = `gps_${gps_id}`;
     const data = await transportDb[tableName].findMany({
         orderBy: {

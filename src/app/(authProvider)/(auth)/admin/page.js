@@ -14,7 +14,16 @@ export default function Admin() {
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [toast, setToast] = useState({ show: false, message: "", type: "" });
     const router = useRouter();
+
+    // Toast notification function
+    const showToast = (message, type = "error") => {
+        setToast({ show: true, message, type });
+        setTimeout(() => {
+            setToast({ show: false, message: "", type: "" });
+        }, 3000);
+    };
 
     useEffect(() => {
         if (error || (!loading && (!userData || !userData.user))) {
@@ -88,15 +97,17 @@ export default function Admin() {
             router.push("/");
         } catch (error) {
             console.error("Error during admin sign out:", error);
-            alert("An error occurred while signing out. Please try again.");
+            showToast(
+                "An error occurred while signing out. Please try again.",
+                "error"
+            );
         }
     };
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-screen">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-900"></div>
-                <p className="ml-2">Loading...</p>
+            <div className="min-h-screen bg-white flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
             </div>
         );
     }
@@ -107,9 +118,50 @@ export default function Admin() {
 
     return (
         <div className="flex flex-col md:flex-row items-center min-h-screen w-full">
+            {/* Toast Notification */}
+            {toast.show && (
+                <div
+                    className={`fixed top-4 left-1/2 z-50 rounded-lg shadow-lg text-white font-medium overflow-hidden ${
+                        toast.type === "error" ? "bg-red-500" : "bg-green-500"
+                    }`}
+                    style={{
+                        transform: "translateX(-50%)",
+                        animation: "slideInFromTop 0.5s ease-out",
+                    }}
+                >
+                    <div className="px-6 py-3">{toast.message}</div>
+                    {/* Loading bar */}
+                    <div
+                        className={`w-full h-1 ${
+                            toast.type === "error"
+                                ? "bg-red-600"
+                                : "bg-green-600"
+                        } bg-opacity-20`}
+                    >
+                        <div
+                            className={`h-full ${
+                                toast.type === "error"
+                                    ? "bg-red-400"
+                                    : "bg-green-400"
+                            } bg-opacity-80`}
+                            style={{
+                                width: "100%",
+                                animation: "shrinkProgress 3s linear",
+                            }}
+                        />
+                    </div>
+                </div>
+            )}
+
             {/* Mobile Header with Hamburger */}
             <div className="md:hidden fixed top-0 left-0 right-0 w-full bg-white p-4 flex justify-between items-center shadow-md z-50">
-                <h1 className="text-xl font-bold text-blue-900">{view === "requests" ? "View Requests" : view === "users" ? "View Users" : "Past Users"}</h1>
+                <h1 className="text-xl font-bold text-blue-900">
+                    {view === "requests"
+                        ? "View Requests"
+                        : view === "users"
+                        ? "View Users"
+                        : "Past Users"}
+                </h1>
                 <button
                     onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                     className="text-blue-900 text-2xl p-2"
@@ -232,7 +284,9 @@ export default function Admin() {
                     <UserView />
                 ) : view === "past" ? (
                     <PastView />
-                ) : <ExtensionView />}
+                ) : (
+                    <ExtensionView />
+                )}
             </div>
         </div>
     );

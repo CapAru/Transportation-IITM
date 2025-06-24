@@ -20,8 +20,6 @@ export async function POST(request) {
                 { status: 404 }
             );
         }
-
-        // Check password (in a real application, you should hash the password and compare)
         if (await comparePassword(password, user.password) === false) {
             return NextResponse.json(
                 { error: "Invalid password" },
@@ -29,7 +27,6 @@ export async function POST(request) {
             );
         }
 
-        // Generate access and refresh tokens
         const accessToken = await generateAccessToken(user.id, user.isAdmin);
         const refreshToken = await generateRefreshToken(user.id, user.isAdmin);
         await prisma.user.update({
@@ -40,7 +37,6 @@ export async function POST(request) {
             },
         });
 
-        // Update user with tokens
         await prisma.session.create({
             data: {
                 userId: user.id,
@@ -49,7 +45,7 @@ export async function POST(request) {
                 expiresAt: new Date(Date.now() + 60 * 60 * 24 * 1000), // 1 day
             },
         });
-        // Set the session cookie directly
+
         const cookieStore = await cookies();
         cookieStore.set({
             name: "sessionToken",

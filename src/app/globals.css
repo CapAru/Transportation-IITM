@@ -63,3 +63,24 @@
 .animate-bounce-slow {
     animation: bounce-slow 6s infinite;
 }
+
+/* Toast animations */
+@keyframes slideInFromTop {
+    0% {
+        transform: translate(-50%, -100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+}
+
+@keyframes shrinkProgress {
+    0% {
+        width: 100%;
+    }
+    100% {
+        width: 0%;
+    }
+}

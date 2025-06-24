@@ -29,6 +29,7 @@ export async function POST() {
         });
 
         if (!session || session.expiresAt < new Date()) {
+            cookieStore.delete("sessionToken");
             return Response.json({ error: "Session expired" }, { status: 401 });
         }
 

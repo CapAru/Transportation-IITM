@@ -8,14 +8,14 @@ export async function POST() {
     try {
         // Clear the session cookie
         const cookieStore = await cookies();
-        cookieStore.delete("sessionToken");
-
-        await prisma.session.deleteMany({
+        
+        await prisma.session.delete({
             where: {
                 accessToken: cookieStore.get("sessionToken")?.value?.accessToken,
             },
         });
-
+        cookieStore.delete("sessionToken");
+        
         return NextResponse.json({ message: "Logged out successfully" }, { status: 200 });
     } catch (error) {
         console.error("Error logging out:", error);

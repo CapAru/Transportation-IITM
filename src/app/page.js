@@ -359,7 +359,7 @@ export default function Home() {
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
                             <div>
                                 <div className="text-3xl font-bold text-blue-600 mb-2">
-                                    10K+
+                                    10M+
                                 </div>
                                 <div className="text-gray-600">Data Points</div>
                             </div>
