@@ -9,7 +9,7 @@ export async function POST() {
         // Clear the session cookie
         const cookieStore = await cookies();
         
-        await prisma.session.delete({
+        await prisma.session.deleteMany({
             where: {
                 accessToken: cookieStore.get("sessionToken")?.value?.accessToken,
             },
