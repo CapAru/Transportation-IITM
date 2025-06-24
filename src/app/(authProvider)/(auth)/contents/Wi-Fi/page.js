@@ -1,6 +1,6 @@
 import SensorList from "@/components/SensorList";
 import SensorMap from "@/components/SensorMap";
-import sensors from "@/data/wifiMapCoordinates"; // Adjust the path as necessary
+import sensors from "@/data/wifiMapCoordinates";
 
 export const metadata = {
     title: "Wi-Fi Data",

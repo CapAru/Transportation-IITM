@@ -11,7 +11,6 @@ export default function AuthLayout({ children }) {
     const [userData, setUserData] = useState(null);
     const [userLoading, setUserLoading] = useState(false);
 
-    // Handle error redirect in useEffect
     useEffect(() => {
         if (error) {
             router.push("/access-denied");
@@ -19,7 +18,6 @@ export default function AuthLayout({ children }) {
     }, [error, router]);
 
     useEffect(() => {
-        // Only fetch user data after authentication is confirmed
         if (!isLoading && isAuthenticated) {
             setUserLoading(true);
             fetch("/api/user")

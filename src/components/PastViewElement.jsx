@@ -13,7 +13,7 @@ function PastViewElement({ user }) {
 
     const date = new Date(user.expiredOn);
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Month is 0-indexed, so add 1
+    const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
     const formattedDate = `${day}-${month}-${year}`;
 
@@ -58,7 +58,6 @@ function PastViewElement({ user }) {
     };
     return (
         <>
-            {/* Toast Notification */}
             {toast.show && (
                 <div
                     className={`fixed top-4 left-1/2 z-50 rounded-lg shadow-lg text-white font-medium overflow-hidden ${
@@ -70,7 +69,6 @@ function PastViewElement({ user }) {
                     }}
                 >
                     <div className="px-6 py-3">{toast.message}</div>
-                    {/* Loading bar */}
                     <div
                         className={`w-full h-1 ${
                             toast.type === "error"

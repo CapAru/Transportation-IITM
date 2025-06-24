@@ -144,7 +144,6 @@ export default function ProfilePage() {
     });    
     return (
         <>
-            {/* Toast Notification */}
             {toast.show && (
                 <>
                     <style jsx>{`
@@ -177,7 +176,6 @@ export default function ProfilePage() {
                         }}
                     >
                         <div className="px-6 py-3">{toast.message}</div>
-                        {/* Loading bar */}
                         <div
                             className={`w-full h-1 ${
                                 toast.type === "error"
@@ -203,7 +201,6 @@ export default function ProfilePage() {
 
             <div className="py-4 sm:py-6 lg:py-10">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Header */}
                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                     <div className="bg-gradient-to-r from-purple-900 via-blue-950 to-gray-900 h-16 sm:h-20"></div>
                     <div className="px-4 py-4 sm:px-6 sm:py-6">
@@ -220,11 +217,9 @@ export default function ProfilePage() {
                     </div>
                 </div>
 
-                {/* Main Content */}
+
                 <div className="mt-6 sm:mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
-                    {/* Left Column - Personal Info */}
                     <div className="space-y-6">
-                        {/* Contact Information */}
                         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 h-full">
                             <h2 className="text-lg font-semibold text-gray-900 mb-4">
                                 Personal Information
@@ -256,9 +251,7 @@ export default function ProfilePage() {
                         </div>
                     </div>
 
-                    {/* Right Column - Account Info */}
                     <div className="space-y-6">
-                        {/* Account Overview */}
                         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 h-full">
                             <h2 className="text-lg font-semibold text-gray-900 mb-4">
                                 Account Overview

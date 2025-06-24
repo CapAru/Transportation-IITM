@@ -4,7 +4,6 @@ import { cookies } from "next/headers";
 
 export async function middleware(request) {
     const { pathname } = request.nextUrl;
-    console.log("Middleware triggered for:", pathname);
 
     const isApiRoute = pathname.startsWith("/api/");
     const isPublicApi = [
@@ -19,7 +18,6 @@ export async function middleware(request) {
     const sessionToken = cookieStore.get("sessionToken");
 
     if (!sessionToken) {
-        // If accessing protected frontend page or protected API without token
         if (!isApiRoute || !isPublicApi) {
             return redirectToLoginOrDeny(request, isApiRoute);
         }
@@ -34,19 +32,16 @@ export async function middleware(request) {
         const { payload } = await jwtVerify(accessToken, secret);
 
         if ((!payload || !payload.userId || payload.exp < Date.now() / 1000) && isPublicApi) {
-            // If token is invalid or expired
             cookieStore.delete("sessionToken");
             return NextResponse.next();
         }
-        // 🛑 Admin route protection
+
         if (isProtectedPage && !payload.isAdmin) {
             return NextResponse.redirect(
                 new URL("/access-denied", request.url)
             );
         }
 
-        // Append headers for downstream use
-        console.log("User ID from payload:", payload);
         const requestHeaders = new Headers(request.headers);
         requestHeaders.set("x-user-id", payload.uid);
         requestHeaders.set(

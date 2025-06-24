@@ -8,19 +8,14 @@ import PastView from "@/components/PastView";
 import ExtensionView from "@/components/ExtensionView";
 
 export default function Admin() {
-    // Start with a default value for server-side rendering
     const [view, setView] = useState("requests");
-    // Add a state to track if the component has mounted
     const [hasMounted, setHasMounted] = useState(false);
-    // Add state for mobile menu
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
     const [userData, setUserData] = useState(null);
-    const [loading, setLoading] = useState(true); // Add missing loading state
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const router = useRouter();
 
-    // Add a useEffect for handling redirects
     useEffect(() => {
         if (error || (!loading && (!userData || !userData.user))) {
             router.push("/access-denied");
@@ -73,7 +68,7 @@ export default function Admin() {
     const handleView = (viewType) => {
         return () => {
             setView(viewType);
-            setIsMobileMenuOpen(false); // Close mobile menu when view changes
+            setIsMobileMenuOpen(false);
         };
     };
 
@@ -90,14 +85,13 @@ export default function Admin() {
                 throw new Error("Logout failed");
             }
 
-            // Redirect to the login page after successful logout
-            router.push("/login");
+            router.push("/");
         } catch (error) {
             console.error("Error during admin sign out:", error);
             alert("An error occurred while signing out. Please try again.");
         }
     };
-    // If still loading or no data, show a loading indicator
+
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
@@ -107,9 +101,8 @@ export default function Admin() {
         );
     }
 
-    // Don't render the main content if there's an error or no user data
     if (error || !userData || !userData.user) {
-        return null; // This will render nothing while the redirect happens
+        return null;
     }
 
     return (

@@ -43,8 +43,7 @@ export default function PageFooter() {
                     {/* Copyright and Links */}
                     <div className="flex flex-col items-center md:items-end space-y-2">
                         <div className="text-sm text-gray-300">
-                            &copy; {new Date().getFullYear()} Indian Institute
-                            of Technology Madras
+                            &copy; {new Date().getFullYear()} Indian Institute of Technology, Madras
                         </div>
                         <div className="text-xs text-gray-400">
                             All rights reserved

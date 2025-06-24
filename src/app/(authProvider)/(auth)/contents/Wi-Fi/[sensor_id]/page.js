@@ -16,7 +16,6 @@ export default function SensorDataPage() {
     const [found, setFound] = useState(true);
     const [downloading, setDownloading] = useState(false);
 
-    // Generate years (current year and previous 7 years)
     const currentYear = new Date().getFullYear();
     const years = Array.from({ length: 8 }, (_, i) => currentYear - i);
 
@@ -25,7 +24,6 @@ export default function SensorDataPage() {
         document.description = `View and manage sensor data for ${sensor_id}.`;
     }, [sensor_id]);
 
-    // Generate months
     const months = [
         { value: 1, label: "January" },
         { value: 2, label: "February" },

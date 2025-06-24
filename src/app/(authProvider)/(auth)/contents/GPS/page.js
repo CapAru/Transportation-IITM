@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import GPSMap from "@/components/GPSMap";
-import gpsBusRoutes from "@/data/gpsBusRoutes.json"; // Assuming this is the correct path to your JSON file
+import gpsBusRoutes from "@/data/gpsBusRoutes.json";
 export default function GPSPage() {
 
     useEffect(() => {
