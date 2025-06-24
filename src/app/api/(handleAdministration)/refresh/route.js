@@ -24,7 +24,6 @@ export async function POST() {
             refreshToken,
             process.env.REFRESH_TOKEN_SECRET
         );
-        // Optional: also verify token exists in session table (extra security)
         const session = await prisma.session.findUnique({
             where: { refreshToken: refreshToken },
         });
@@ -33,7 +32,6 @@ export async function POST() {
             return Response.json({ error: "Session expired" }, { status: 401 });
         }
 
-        // Generate new access token
         const newAccessToken = await generateAccessToken(payload.uid, payload.isAdmin);
         cookieStore.set({
             name: "sessionToken",

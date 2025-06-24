@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 
 export async function middleware(request) {
     const { pathname } = request.nextUrl;
+    console.log("Middleware triggered for:", pathname);
 
     const isApiRoute = pathname.startsWith("/api/");
     const isPublicApi = [
@@ -45,9 +46,9 @@ export async function middleware(request) {
         }
 
         // Append headers for downstream use
+        console.log("User ID from payload:", payload);
         const requestHeaders = new Headers(request.headers);
-        requestHeaders.set("x-user-id", payload.userId);
-        requestHeaders.set("x-user-email", payload.email);
+        requestHeaders.set("x-user-id", payload.uid);
         requestHeaders.set(
             "x-user-admin",
             payload.isAdmin?.toString() || "false"
