@@ -1,5 +1,6 @@
 "use client";
 
+import NavBar from "@/components/NavBar";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
@@ -12,7 +13,7 @@ export default function Home() {
         document.title = "TDMS - Home";
         document.description =
             "Welcome to the Transport Data Management System. Access transportation data and analytics at IIT Madras.";
-    })
+    });
     useEffect(() => {
         // Check if user is logged in
         async function checkAuthStatus() {
@@ -52,33 +53,14 @@ export default function Home() {
     return (
         <div className="min-h-screen bg-white">
             {/* Navigation */}
-            <nav className="flex justify-between items-center px-6 py-4 lg:px-12 bg-white shadow-sm">
-                <div className="flex items-center">
-                    <img src="/IIT_Madras_Logo.svg" width={"50px"} />
-                </div>
 
-                {isLoggedIn ? (
-                    <div className="flex items-center space-x-6">
-                        <span className="text-gray-600 hidden md:block">
-                            Welcome,{" "}
-                            <span className="font-semibold text-gray-900">
-                                {userData?.name}
-                            </span>
-                        </span>
-                        <Link
-                            href="/contents"
-                            className="text-gray-600 hover:text-blue-600 transition-colors font-medium"
-                        >
-                            Contents
-                        </Link>
-                        <Link
-                            href="/user/profile"
-                            className="text-gray-600 hover:text-blue-600 transition-colors font-medium"
-                        >
-                            Profile
-                        </Link>
+            {isLoggedIn ? (
+                <NavBar />
+            ) : (
+                <nav className="flex justify-between items-center px-6 py-4 lg:px-12 bg-white shadow-sm">
+                    <div className="flex items-center">
+                        <img src="/IIT_Madras_Logo.svg" width={"50px"} />
                     </div>
-                ) : (
                     <div className="hidden md:flex space-x-8">
                         <Link
                             href="/login"
@@ -93,8 +75,8 @@ export default function Home() {
                             Register
                         </Link>
                     </div>
-                )}
-            </nav>
+                </nav>
+            )}
 
             {isLoggedIn ? (
                 // Logged in user dashboard
@@ -405,30 +387,6 @@ export default function Home() {
                     </div>
                 </div>
             )}
-
-            {/* Footer */}
-            <footer className="bg-gray-900 text-white py-8">
-                <div className="max-w-7xl mx-auto px-6">
-                    <div className="flex flex-col md:flex-row justify-between items-center">
-                        <div className="flex items-center">
-                            <img src="/IIT_Madras_Logo.svg" width={"50px"} />
-                        </div>
-                        <div className="flex space-x-8">
-                            {!isLoggedIn && (
-                                <Link
-                                    href="/admin"
-                                    className="text-gray-400 hover:text-white transition-colors"
-                                >
-                                    Admin Portal
-                                </Link>
-                            )}
-                            <span className="text-gray-400">
-                                © 2025 IIT Madras
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </footer>
         </div>
     );
 }
