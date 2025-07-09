@@ -2,22 +2,15 @@
 import React, { useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import { MdLocationPin } from "react-icons/md";
 import ReactDOMServer from "react-dom/server";
-
-// Dynamic import for routing machine to avoid SSR issues
-let LRM = null;
-if (typeof window !== "undefined") {
-    require("leaflet-routing-machine");
-    LRM = L.Routing;
-}
 
 const GPSMap = ({ mapData }) => {
     const mapRef = useRef(null);
     const mapInstanceRef = useRef(null);
-    const routingControlRef = useRef(null);
     const markersRef = useRef([]); // Track all markers
+    const routeLayersRef = useRef([]); // Track route polylines
+    const legendRef = useRef(null); // Track speed legend
 
     useEffect(() => {
         if (!mapInstanceRef.current) {
@@ -38,6 +31,22 @@ const GPSMap = ({ mapData }) => {
         // Cleanup function
         return () => {
             if (mapInstanceRef.current) {
+                // Clear all layers before removing the map
+                markersRef.current.forEach((marker) => {
+                    mapInstanceRef.current.removeLayer(marker);
+                });
+                routeLayersRef.current.forEach((layer) => {
+                    mapInstanceRef.current.removeLayer(layer);
+                });
+                markersRef.current = [];
+                routeLayersRef.current = [];
+
+                // Remove existing legend if it exists
+                if (legendRef.current) {
+                    mapInstanceRef.current.removeControl(legendRef.current);
+                    legendRef.current = null;
+                }
+
                 mapInstanceRef.current.remove();
                 mapInstanceRef.current = null;
             }
@@ -48,23 +57,46 @@ const GPSMap = ({ mapData }) => {
     useEffect(() => {
         console.log("Data received:", mapData);
 
-        if (mapData && mapData.length > 0 && mapInstanceRef.current && LRM) {
-            // Clear existing routing control if any
-            if (routingControlRef.current) {
-                mapInstanceRef.current.removeControl(routingControlRef.current);
-            }
-
+        if (mapData && mapData.length > 0 && mapInstanceRef.current) {
             // Clear existing markers
             markersRef.current.forEach((marker) => {
                 mapInstanceRef.current.removeLayer(marker);
             });
             markersRef.current = [];
 
-            // Create array of coordinates for the path with better filtering
+            // Clear existing route polylines
+            routeLayersRef.current.forEach((layer) => {
+                mapInstanceRef.current.removeLayer(layer);
+            });
+            routeLayersRef.current = [];
+
+            // Remove existing legend if it exists
+            if (legendRef.current) {
+                mapInstanceRef.current.removeControl(legendRef.current);
+                legendRef.current = null;
+            }
+
+            // Haversine distance calculation function
+            const calculateHaversineDistance = (lat1, lon1, lat2, lon2) => {
+                const R = 6371; // Earth's radius in kilometers
+                const dLat = ((lat2 - lat1) * Math.PI) / 180;
+                const dLon = ((lon2 - lon1) * Math.PI) / 180;
+                const a =
+                    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                    Math.cos((lat1 * Math.PI) / 180) *
+                        Math.cos((lat2 * Math.PI) / 180) *
+                        Math.sin(dLon / 2) *
+                        Math.sin(dLon / 2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                return R * c; // Distance in kilometers
+            };
+
+            // Create array of coordinates for the path
             const pathCoordinates = mapData
                 .map((point) => [
                     parseFloat(point.latitude),
                     parseFloat(point.longitude),
+                    parseFloat(point.speed) || 0, // Include speed data
                 ])
                 // Remove duplicate consecutive coordinates
                 .filter((coord, index, arr) => {
@@ -74,185 +106,183 @@ const GPSMap = ({ mapData }) => {
                         Math.abs(coord[0] - prev[0]) > 0 ||
                         Math.abs(coord[1] - prev[1]) > 0
                     );
+                })
+                // Filter out points that are more than 2km apart from previous point
+                .filter((coord, index, arr) => {
+                    if (index === 0) return true;
+                    const prev = arr[index - 1];
+                    const distance = calculateHaversineDistance(
+                        prev[0],
+                        prev[1],
+                        coord[0],
+                        coord[1]
+                    );
+                    if (distance > 2) {
+                        console.log(
+                            `Filtered out point at distance: ${distance.toFixed(
+                                2
+                            )} km`
+                        );
+                        return false;
+                    }
+                    return true;
                 });
 
-            console.log("Filtered coordinates:", pathCoordinates);
+            console.log(
+                "Plotting raw GPS coordinates with speed (after filtering):",
+                pathCoordinates.length
+            );
 
             if (pathCoordinates.length > 1) {
-                // Sample waypoints for routing (to avoid too many API calls)
-                const waypoints = [];
+                // Calculate speed range for gradient
+                const speeds = pathCoordinates.map((coord) => coord[2]);
+                const minSpeed = Math.min(...speeds);
+                const maxSpeed = Math.max(...speeds);
 
-                // Always include start point
-                waypoints.push(
-                    L.latLng(pathCoordinates[0][0], pathCoordinates[0][1])
+                console.log(
+                    `Speed range: ${minSpeed.toFixed(2)} - ${maxSpeed.toFixed(
+                        2
+                    )}`
                 );
 
-                // Add intermediate waypoints (sample every 10th point or based on distance)
-                const step = Math.max(
-                    1,
-                    Math.floor(pathCoordinates.length / 10)
-                );
-                for (let i = step; i < pathCoordinates.length - 1; i += step) {
-                    waypoints.push(
-                        L.latLng(pathCoordinates[i][0], pathCoordinates[i][1])
-                    );
-                }
+                // Function to get color based on speed (Red = slow, Yellow = medium, Green = fast)
+                const getSpeedColor = (speed) => {
+                    if (maxSpeed === minSpeed) return "#ffff00"; // All same speed, use yellow
 
-                // Always include end point
-                waypoints.push(
-                    L.latLng(
-                        pathCoordinates[pathCoordinates.length - 1][0],
-                        pathCoordinates[pathCoordinates.length - 1][1]
-                    )
-                );
+                    // Normalize speed from 0 (slowest) to 1 (fastest)
+                    const normalized =
+                        (speed - minSpeed) / (maxSpeed - minSpeed);
 
-                // Create routing control
-                const routingControl = LRM.control({
-                    waypoints: waypoints,
-                    routeWhileDragging: false,
-                    addWaypoints: false,
-                    draggableWaypoints: false,
-                    fitSelectedRoutes: true,
-                    showAlternatives: false,
-                    show: false,
-                    createMarker: function () {
-                        return null;
-                    }, // Hide all default markers
-                    lineOptions: {
-                        styles: [
-                            {
-                                color: "blue",
-                                weight: 6,
-                                opacity: 0.8,
-                            },
+                    if (normalized <= 0.5) {
+                        // Red to Yellow (0 to 0.5) - slow to medium speeds
+                        const r = 255;
+                        const g = Math.round(255 * (normalized * 2));
+                        const b = 0;
+                        return `rgb(${r}, ${g}, ${b})`;
+                    } else {
+                        // Yellow to Green (0.5 to 1) - medium to fast speeds
+                        const r = Math.round(255 * (2 - normalized * 2));
+                        const g = 255;
+                        const b = 0;
+                        return `rgb(${r}, ${g}, ${b})`;
+                    }
+                };
+
+                // Create colored segments for speed visualization
+                for (let i = 0; i < pathCoordinates.length - 1; i++) {
+                    const currentPoint = pathCoordinates[i];
+                    const nextPoint = pathCoordinates[i + 1];
+
+                    // Use average speed of the two points for the segment
+                    const segmentSpeed = (currentPoint[2] + nextPoint[2]) / 2;
+                    const segmentColor = getSpeedColor(segmentSpeed);
+
+                    // Create a small polyline segment
+                    const segment = L.polyline(
+                        [
+                            [currentPoint[0], currentPoint[1]],
+                            [nextPoint[0], nextPoint[1]],
                         ],
-                    },
-                    router: LRM.osrmv1({
-                        serviceUrl: "https://router.project-osrm.org/route/v1",
-                    }),
-                }).addTo(mapInstanceRef.current);
+                        {
+                            color: segmentColor,
+                            weight: 5,
+                            opacity: 0.9,
+                        }
+                    ).addTo(mapInstanceRef.current);
 
-                routingControlRef.current = routingControl;
+                    // Add popup with speed info on hover
+                    segment.bindTooltip(
+                        `Speed: ${segmentSpeed.toFixed(2)} km/h<br>` +
+                            `Range: ${minSpeed.toFixed(2)} - ${maxSpeed.toFixed(
+                                2
+                            )} km/h`,
+                        {
+                            sticky: true,
+                            direction: "top",
+                        }
+                    );
 
-                // Hide the routing control container
-                const routingContainer = document.querySelector(
-                    ".leaflet-routing-container"
-                );
-                if (routingContainer) {
-                    routingContainer.style.display = "none";
+                    // Track the segment for cleanup
+                    routeLayersRef.current.push(segment);
                 }
 
-                // Add custom start and end markers after routing
-                routingControl.on("routesfound", function (e) {
-                    const routes = e.routes;
-                    console.log("Route found:", routes[0]);
+                // Add speed legend
+                const legend = L.control({ position: "bottomright" });
+                legend.onAdd = function (map) {
+                    const div = L.DomUtil.create("div", "speed-legend");
+                    div.innerHTML = `
+                        <div style="background: white; padding: 10px; border-radius: 5px; border: 2px solid #ccc; font-size: 12px;">
+                            <h4 style="margin: 0 0 5px 0;">Speed Legend</h4>
+                            <div style="display: flex; align-items: center; margin: 2px 0;">
+                                <div style="width: 20px; height: 3px; background: #ff0000; margin-right: 5px;"></div>
+                                <span>Slow (${minSpeed.toFixed(1)} km/h)</span>
+                            </div>
+                            <div style="display: flex; align-items: center; margin: 2px 0;">
+                                <div style="width: 20px; height: 3px; background: #ffff00; margin-right: 5px;"></div>
+                                <span>Medium</span>
+                            </div>
+                            <div style="display: flex; align-items: center; margin: 2px 0;">
+                                <div style="width: 20px; height: 3px; background: #00ff00; margin-right: 5px;"></div>
+                                <span>Fast (${maxSpeed.toFixed(1)} km/h)</span>
+                            </div>
+                        </div>
+                    `;
+                    return div;
+                };
+                legend.addTo(mapInstanceRef.current);
+                legendRef.current = legend;
 
-                    // Add custom markers for start and end points
-                    const startCoord = pathCoordinates[0];
-                    const endCoord =
-                        pathCoordinates[pathCoordinates.length - 1];
+                // Fit map to the route bounds using first and last coordinates
+                const boundsCoords = pathCoordinates.map((coord) => [
+                    coord[0],
+                    coord[1],
+                ]);
+                const bounds = L.latLngBounds(boundsCoords);
+                mapInstanceRef.current.fitBounds(bounds);
 
-                    const startIcon = L.divIcon({
-                        html: ReactDOMServer.renderToString(
-                            <MdLocationPin className="text-green-600 bg-transparent text-4xl" />
-                        ),
-                        className: "start-marker",
-                        iconSize: [32, 32],
-                        iconAnchor: [16, 32],
-                        popupAnchor: [0, -32],
-                    });
+                // Add start and end markers
+                const startCoord = pathCoordinates[0];
+                const endCoord = pathCoordinates[pathCoordinates.length - 1];
 
-                    const endIcon = L.divIcon({
-                        html: ReactDOMServer.renderToString(
-                            <MdLocationPin className="text-red-600 bg-transparent text-4xl" />
-                        ),
-                        className: "end-marker",
-                        iconSize: [32, 32],
-                        iconAnchor: [16, 32],
-                        popupAnchor: [0, -32],
-                    });
-
-                    const startMarker = L.marker(startCoord, {
-                        icon: startIcon,
-                    })
-                        .addTo(mapInstanceRef.current)
-                        .bindPopup(
-                            `Start Point<br>Lat: ${startCoord[0]}<br>Lng: ${startCoord[1]}`
-                        );
-
-                    const endMarker = L.marker(endCoord, { icon: endIcon })
-                        .addTo(mapInstanceRef.current)
-                        .bindPopup(
-                            `End Point<br>Lat: ${endCoord[0]}<br>Lng: ${endCoord[1]}`
-                        );
-
-                    markersRef.current.push(startMarker, endMarker);
-
-                    // You can add additional logic here, like displaying route info
-                    const route = routes[0];
-                    console.log(
-                        `Distance: ${(
-                            route.summary.totalDistance / 1000
-                        ).toFixed(2)} km`
-                    );
-                    console.log(
-                        `Duration: ${Math.round(
-                            route.summary.totalTime / 60
-                        )} minutes`
-                    );
+                const startIcon = L.divIcon({
+                    html: ReactDOMServer.renderToString(
+                        <MdLocationPin className="text-green-600 bg-transparent text-4xl" />
+                    ),
+                    className: "start-marker",
+                    iconSize: [32, 32],
+                    iconAnchor: [16, 32],
+                    popupAnchor: [0, -32],
                 });
 
-                routingControl.on("routingerror", function (e) {
-                    console.error("Routing error:", e.error);
-                    // Fallback to simple polyline if routing fails
-                    const polyline = L.polyline(pathCoordinates, {
-                        color: "red",
-                        weight: 4,
-                        opacity: 0.8,
-                        dashArray: "5, 5",
-                    }).addTo(mapInstanceRef.current);
-
-                    // Add simple markers as fallback
-                    const startCoord = pathCoordinates[0];
-                    const endCoord =
-                        pathCoordinates[pathCoordinates.length - 1];
-
-                    const startIcon = L.divIcon({
-                        html: ReactDOMServer.renderToString(
-                            <MdLocationPin className="text-green-600 bg-transparent text-4xl" />
-                        ),
-                        className: "start-marker",
-                        iconSize: [32, 32],
-                        iconAnchor: [16, 32],
-                        popupAnchor: [0, -32],
-                    });
-
-                    const endIcon = L.divIcon({
-                        html: ReactDOMServer.renderToString(
-                            <MdLocationPin className="text-red-600 bg-transparent text-4xl" />
-                        ),
-                        className: "end-marker",
-                        iconSize: [32, 32],
-                        iconAnchor: [16, 32],
-                        popupAnchor: [0, -32],
-                    });
-
-                    const startMarker = L.marker(startCoord, {
-                        icon: startIcon,
-                    })
-                        .addTo(mapInstanceRef.current)
-                        .bindPopup(
-                            `Start Point (Fallback)<br>Lat: ${startCoord[0]}<br>Lng: ${startCoord[1]}`
-                        );
-
-                    const endMarker = L.marker(endCoord, { icon: endIcon })
-                        .addTo(mapInstanceRef.current)
-                        .bindPopup(
-                            `End Point (Fallback)<br>Lat: ${endCoord[0]}<br>Lng: ${endCoord[1]}`
-                        );
-
-                    markersRef.current.push(startMarker, endMarker);
+                const endIcon = L.divIcon({
+                    html: ReactDOMServer.renderToString(
+                        <MdLocationPin className="text-red-600 bg-transparent text-4xl" />
+                    ),
+                    className: "end-marker",
+                    iconSize: [32, 32],
+                    iconAnchor: [16, 32],
+                    popupAnchor: [0, -32],
                 });
+
+                const startMarker = L.marker(startCoord, {
+                    icon: startIcon,
+                })
+                    .addTo(mapInstanceRef.current)
+                    .bindPopup(
+                        `Start Point<br>Lat: ${startCoord[0]}<br>Lng: ${startCoord[1]}`
+                    );
+
+                const endMarker = L.marker(endCoord, { icon: endIcon })
+                    .addTo(mapInstanceRef.current)
+                    .bindPopup(
+                        `End Point<br>Lat: ${endCoord[0]}<br>Lng: ${endCoord[1]}`
+                    );
+
+                markersRef.current.push(startMarker, endMarker);
+
+                console.log(
+                    `Raw GPS route visualization complete. Points: ${pathCoordinates.length}`
+                );
             } else {
                 console.warn("Not enough valid coordinates to create a route");
             }
