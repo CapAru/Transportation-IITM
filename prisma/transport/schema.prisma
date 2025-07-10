@@ -9,14 +9,16 @@ datasource db {
 }
 
 model gps_data {
-  id              Int       @id @default(autoincrement())
-  imei            String?
-  date            DateTime? @db.Date
-  time            DateTime? @db.Time(6)
+  id              Int      @default(autoincrement())
+  imei            String
+  date            DateTime @db.Date
+  time            DateTime @db.Time(6)
   latitude        Float?
   longitude       Float?
   speed           Float?
   signal_strength Float?
+
+  @@id([id, date], map: "gps_data_pkey1")
 }
 
 model wifi_data {
@@ -25,6 +27,8 @@ model wifi_data {
   rssi      Float?
   mac       String?
   device_id String?
+
+  @@index([device_id, timestamp], map: "idx_wifi_device_timestamp")
 }
 
 model obu_data {
@@ -67,4 +71,494 @@ model rsu_data {
   gyro_x    Float?
   gyro_y    Float?
   gyro_z    Float?
+}
+
+model gps_data_old {
+  id              Int       @id(map: "gps_data_pkey") @default(autoincrement())
+  imei            String?
+  date            DateTime? @db.Date
+  time            DateTime? @db.Time(6)
+  latitude        Float?
+  longitude       Float?
+  speed           Float?
+  signal_strength Float?
+
+  @@index([imei, date, time], map: "idx_gps_imei_date_time")
+}
+
+model wifi_data_101_102 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_101_102_timestamp")
+}
+
+model wifi_data_103_104 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_103_104_timestamp")
+}
+
+model wifi_data_105_106 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_105_106_timestamp")
+}
+
+model wifi_data_107_108 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_107_108_timestamp")
+}
+
+model wifi_data_109_110 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_109_110_timestamp")
+}
+
+model wifi_data_111_112 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_111_112_timestamp")
+}
+
+model wifi_data_113_114 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_113_114_timestamp")
+}
+
+model wifi_data_115_116 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_115_116_timestamp")
+}
+
+model wifi_data_117_118 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_117_118_timestamp")
+}
+
+model wifi_data_119_120 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_119_120_timestamp")
+}
+
+model wifi_data_121_122 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_121_122_timestamp")
+}
+
+model wifi_data_123_124 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_123_124_timestamp")
+}
+
+model wifi_data_125_126 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_125_126_timestamp")
+}
+
+model wifi_data_127_128 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_127_128_timestamp")
+}
+
+model wifi_data_129 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_129_timestamp")
+}
+
+model wifi_data_130 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_130_timestamp")
+}
+
+model wifi_data_131 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_131_timestamp")
+}
+
+model wifi_data_132 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_132_timestamp")
+}
+
+model wifi_data_133 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_133_timestamp")
+}
+
+model wifi_data_134_216 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_134_216_timestamp")
+}
+
+model wifi_data_135 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_135_timestamp")
+}
+
+model wifi_data_136 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_136_timestamp")
+}
+
+model wifi_data_137_213 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_137_213_timestamp")
+}
+
+model wifi_data_138_214 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_138_214_timestamp")
+}
+
+model wifi_data_139 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_139_timestamp")
+}
+
+model wifi_data_140 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_140_timestamp")
+}
+
+model wifi_data_195 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_195_timestamp")
+}
+
+model wifi_data_197 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_197_timestamp")
+}
+
+model wifi_data_199 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_199_timestamp")
+}
+
+model wifi_data_201_202 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_201_202_timestamp")
+}
+
+model wifi_data_203_204 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_203_204_timestamp")
+}
+
+model wifi_data_205_206 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_205_206_timestamp")
+}
+
+model wifi_data_207_208 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_207_208_timestamp")
+}
+
+model wifi_data_209 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_209_timestamp")
+}
+
+model wifi_data_210 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_210_timestamp")
+}
+
+model wifi_data_211 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_211_timestamp")
+}
+
+model wifi_data_212 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_212_timestamp")
+}
+
+model wifi_data_215 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_215_timestamp")
+}
+
+model wifi_data_217 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_217_timestamp")
+}
+
+model wifi_data_218 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_218_timestamp")
+}
+
+model wifi_data_300 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_300_timestamp")
+}
+
+model wifi_data_301_907 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_301_907_timestamp")
+}
+
+model wifi_data_302_902 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_302_902_timestamp")
+}
+
+model wifi_data_303 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_303_timestamp")
+}
+
+model wifi_data_304_906 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_304_906_timestamp")
+}
+
+model wifi_data_305_905 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_305_905_timestamp")
+}
+
+model wifi_data_306_904 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_306_904_timestamp")
+}
+
+model wifi_data_307 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_307_timestamp")
+}
+
+model wifi_data_901_308 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_901_308_timestamp")
+}
+
+model wifi_data_903 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_903_timestamp")
+}
+
+model wifi_data_908 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_908_timestamp")
+}
+
+model wifi_data_913 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_913_timestamp")
+}
+
+model wifi_data_999 {
+  id        Int       @id @default(autoincrement())
+  timestamp DateTime? @db.Timestamp(6)
+  rssi      Float?
+  mac       String?
+
+  @@index([timestamp], map: "idx_wifi_data_999_timestamp")
 }

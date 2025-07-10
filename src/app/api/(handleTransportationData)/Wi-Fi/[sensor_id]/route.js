@@ -41,13 +41,14 @@ export async function GET(request, { params }) {
         const startDate = new Date(year, month - 1, 1); // First day of the month
         const endDate = new Date(year, month, 0, 23, 59, 59, 999); // Last day of the month
         // Fetch the route data for the given sensor_id, year, and month
-        const routeData = await transportDb.wifi_data.findMany({
+        const tableName = `wifi_data_${sensor_id}`;
+
+        const routeData = await transportDb[tableName].findMany({
             where: {
                 timestamp: {
                     gt: startDate,
                     lte: endDate,
                 },
-                device_id: sensor_id,
             },
             orderBy: {
                 timestamp: "asc",
@@ -75,13 +76,13 @@ export async function POST(request, { params }) {
     try {
         const startDate = new Date(year, month - 1, 1); // First day of the month
         const endDate = new Date(year, month, 0, 23, 59, 59, 999); // Last day of the month
-        const data = await transportDb.wifi_data.findMany({
+        const tableName = `wifi_data_${sensor_id}`;
+        const data = await transportDb[tableName].findMany({
             where: {
                 timestamp: {
                     gt: startDate,
                     lte: endDate,
                 },
-                device_id: sensor_id,
             },
             orderBy: {
                 timestamp: "asc",
