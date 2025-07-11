@@ -3,7 +3,28 @@ import React, { useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { MdLocationPin } from "react-icons/md";
+import { TbArrowBadgeUpFilled } from "react-icons/tb";
 import ReactDOMServer from "react-dom/server";
+
+// Add custom CSS for direction arrows
+const arrowStyles = `
+    .direction-arrow {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+    .direction-arrow div {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+`;
+
+// Inject styles into document head
+if (typeof document !== "undefined") {
+    const styleSheet = document.createElement("style");
+    styleSheet.textContent = arrowStyles;
+    document.head.appendChild(styleSheet);
+}
 
 const GPSMap = ({ mapData }) => {
     const mapRef = useRef(null);
@@ -168,7 +189,7 @@ const GPSMap = ({ mapData }) => {
                     }
                 };
 
-                // Create colored segments for speed visualization
+                // Create colored segments for speed visualization with direction arrows
                 for (let i = 0; i < pathCoordinates.length - 1; i++) {
                     const currentPoint = pathCoordinates[i];
                     const nextPoint = pathCoordinates[i + 1];
@@ -189,6 +210,64 @@ const GPSMap = ({ mapData }) => {
                             opacity: 0.9,
                         }
                     ).addTo(mapInstanceRef.current);
+
+                    // Add direction arrow for every 5th segment to avoid clutter
+                    if (i % 5 === 0) {
+                        // Calculate midpoint of the segment
+                        const midLat = (currentPoint[0] + nextPoint[0]) / 2;
+                        const midLng = (currentPoint[1] + nextPoint[1]) / 2;
+
+                        // Calculate bearing (direction) from current to next point
+                        const lat1 = (currentPoint[0] * Math.PI) / 180;
+                        const lat2 = (nextPoint[0] * Math.PI) / 180;
+                        const deltaLng =
+                            ((nextPoint[1] - currentPoint[1]) * Math.PI) / 180;
+
+                        const y = Math.sin(deltaLng) * Math.cos(lat2);
+                        const x =
+                            Math.cos(lat1) * Math.sin(lat2) -
+                            Math.sin(lat1) *
+                                Math.cos(lat2) *
+                                Math.cos(deltaLng);
+                        let bearing = (Math.atan2(y, x) * 180) / Math.PI;
+
+                        // Normalize bearing to 0-360 degrees
+                        bearing = (bearing + 360) % 360;
+
+                        // Create arrow marker with proper centering
+                        const arrowIcon = L.divIcon({
+                            html: ReactDOMServer.renderToString(
+                                <div
+                                    style={{
+                                        transform: `rotate(${bearing}deg)`,
+                                        color: "blue",
+                                        fontSize: "14px",
+                                        textShadow:
+                                            "1px 1px 2px rgba(0,0,0,0.5)",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        width: "100%",
+                                        height: "100%",
+                                        lineHeight: 1,
+                                    }}
+                                >
+                                    <TbArrowBadgeUpFilled />
+                                </div>
+                            ),
+                            className: "direction-arrow",
+                            iconSize: [14, 14],
+                            iconAnchor: [7, 7], // Center the icon
+                        });
+
+                        const arrowMarker = L.marker([midLat, midLng], {
+                            icon: arrowIcon,
+                            interactive: false, // Make arrow non-interactive
+                        }).addTo(mapInstanceRef.current);
+
+                        // Track the arrow marker for cleanup
+                        markersRef.current.push(arrowMarker);
+                    }
 
                     // Add popup with speed info on hover
                     segment.bindTooltip(
