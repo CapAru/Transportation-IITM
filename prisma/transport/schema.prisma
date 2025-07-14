@@ -50,6 +50,8 @@ model obu_data {
   gyro_x    Float?
   gyro_y    Float?
   gyro_z    Float?
+
+  @@index([date_ist, obu_id], map: "idx_obu_data_date_ist_obu_id")
 }
 
 model rsu_data {
@@ -71,6 +73,8 @@ model rsu_data {
   gyro_x    Float?
   gyro_y    Float?
   gyro_z    Float?
+
+  @@index([date_ist, rsu_id], map: "idx_rsu_data_ist_date_rsu_id")
 }
 
 model gps_data_old {
