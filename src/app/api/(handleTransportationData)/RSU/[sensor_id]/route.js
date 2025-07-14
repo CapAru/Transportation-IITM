@@ -9,15 +9,20 @@ export async function GET(request, { params }) {
     const month = searchParams.get("month");
 
     try {
-        // Create date range for the selected month
-        const startDate = new Date(year, month - 1, 1); // First day of the month
-        const endDate = new Date(year, month, 0, 23, 59, 59, 999); // Last day of the month
+        // Create start date: first day of the month at 00:00:00 UTC
+        const startDate = new Date(
+            Date.UTC(year, month - 1, 1)
+        );
 
+        // Create end date: last day of the month at 23:59:59 UTC
+        const endDate = new Date(
+            Date.UTC(year, month, 0, 23, 59, 59, 999)
+        );
         // Fetch the route data for the given sensor_id, year, and month
         const routeData = await transportDb.rsu_data.findMany({
             where: {
                 date_ist: {
-                    gt: startDate,
+                    gte: startDate,
                     lte: endDate,
                 },
                 rsu_id: Number(sensor_id),
@@ -37,10 +42,10 @@ export async function GET(request, { params }) {
         const formattedData = routeData.map((item) => ({
             ...item,
             date_ist: item.date_ist
-                ? item.date_ist.toISOString().split("T")[0]
+                ? item.date_ist.toLocaleDateString("en-GB")
                 : null,
             time_ist: item.time_ist
-                ? item.time_ist.toISOString().split("T")[1].split(".")[0]
+                ? item.time_ist.toLocaleTimeString("en-GB", { hour12: false })
                 : null,
         }));
 
@@ -60,13 +65,20 @@ export async function POST(request, { params }) {
     const { year, month } = await request.json();
 
     try {
-        const startDate = new Date(year, month - 1, 1); // First day of the month
-        const endDate = new Date(year, month, 0, 23, 59, 59, 999); // Last day of the month
+        // Create start date: first day of the month at 00:00:00 UTC
+        const startDate = new Date(
+            Date.UTC(year, month - 1, 1, 0, 0, 0, 0)
+        );
+
+        // Create end date: last day of the month at 23:59:59 UTC
+        const endDate = new Date(
+            Date.UTC(year, month, 0, 23, 59, 59, 999)
+        );
 
         const data = await transportDb.rsu_data.findMany({
             where: {
                 date_ist: {
-                    gt: startDate,
+                    gte: startDate,
                     lte: endDate,
                 },
                 rsu_id: Number(sensor_id),
@@ -85,10 +97,10 @@ export async function POST(request, { params }) {
         const formattedData = data.map((item) => ({
             ...item,
             date_ist: item.date_ist
-                ? item.date_ist.toISOString().split("T")[0]
+                ? item.date_ist.toLocaleDateString("en-GB")
                 : null,
             time_ist: item.time_ist
-                ? item.time_ist.toISOString().split("T")[1].split(".")[0]
+                ? item.time_ist.toLocaleTimeString("en-GB", { hour12: false })
                 : null,
         }));
 
