@@ -3,6 +3,9 @@
 import NavBar from "@/components/NavBar";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { FaMapMarkedAlt } from "react-icons/fa";
+import { GrSecure } from "react-icons/gr";
+import { IoCloudDownloadOutline } from "react-icons/io5";
 
 export default function Home() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -95,7 +98,7 @@ export default function Home() {
                     </div>
 
                     {/* Quick Actions */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
                         <Link
                             href="/contents"
                             className="group bg-white p-6 rounded-xl border border-gray-200 hover:shadow-lg hover:border-blue-300 transition-all"
@@ -149,66 +152,6 @@ export default function Home() {
                                 Manage your account
                             </p>
                         </Link>
-
-                        <Link
-                            href="/contents/GPS"
-                            className="group bg-white p-6 rounded-xl border border-gray-200 hover:shadow-lg hover:border-purple-300 transition-all"
-                        >
-                            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-purple-200 transition-colors">
-                                <svg
-                                    className="w-6 h-6 text-purple-600"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                                    />
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                                    />
-                                </svg>
-                            </div>
-                            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                                GPS Data
-                            </h3>
-                            <p className="text-gray-600 text-sm">
-                                Location tracking data
-                            </p>
-                        </Link>
-
-                        <Link
-                            href="/contents/Wi-Fi"
-                            className="group bg-white p-6 rounded-xl border border-gray-200 hover:shadow-lg hover:border-orange-300 transition-all"
-                        >
-                            <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-orange-200 transition-colors">
-                                <svg
-                                    className="w-6 h-6 text-orange-600"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"
-                                    />
-                                </svg>
-                            </div>
-                            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                                Wi-Fi Data
-                            </h3>
-                            <p className="text-gray-600 text-sm">
-                                Network connectivity data
-                            </p>
-                        </Link>
                     </div>
 
                     {/* Account Info */}
@@ -218,28 +161,32 @@ export default function Home() {
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div className="text-center">
-                                <div className="text-2xl font-bold text-blue-600 mb-2">
-                                    Active
-                                </div>
-                                <div className="text-gray-600">
+                                <div className="text-gray-600 mb-2">
                                     Account Status
                                 </div>
+                                <div className="text-2xl font-bold text-blue-600">
+                                    Active
+                                </div>
                             </div>
                             <div className="text-center">
-                                <div className="text-2xl font-bold text-green-600 mb-2">
+                                <div className="text-gray-600 mb-2">
+                                    Institution
+                                </div>
+                                <div className="text-2xl font-bold text-green-600">
                                     {userData?.college || "IIT Madras"}
                                 </div>
-                                <div className="text-gray-600">Institution</div>
                             </div>
                             <div className="text-center">
-                                <div className="text-2xl font-bold text-purple-600 mb-2">
+                                <div className="text-gray-600 mb-2">
+                                    Valid Until
+                                </div>
+                                <div className="text-2xl font-bold text-purple-600">
                                     {userData?.validity
                                         ? new Date(
                                               userData.validity
-                                          ).toLocaleDateString()
+                                          ).toLocaleDateString("en-GB")
                                         : "N/A"}
                                 </div>
-                                <div className="text-gray-600">Valid Until</div>
                             </div>
                         </div>
                     </div>
@@ -254,9 +201,12 @@ export default function Home() {
                                 Management System
                             </span>
                         </h1>
+                        <p className="text-xl text-gray-600 mb-1 max-w-2xl mx-auto">
+                            Open-source database for transportation data by IIT
+                            Madras.
+                        </p>
                         <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-                            Advanced analytics and intelligent insights for
-                            transportation data at IIT Madras
+                            Access GPS, Wi-Fi, RSU, and OBU data now.
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -280,44 +230,20 @@ export default function Home() {
                         {/* ...existing features code... */}
                         <div className="bg-white p-8 rounded-xl border border-gray-200 hover:shadow-lg transition-shadow">
                             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
-                                <svg
-                                    className="w-6 h-6 text-blue-600"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                                    />
-                                </svg>
+                                <FaMapMarkedAlt className="w-6 h-6 text-blue-600" />
                             </div>
                             <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                                Real-time Analytics
+                                Data Visualization
                             </h3>
                             <p className="text-gray-600">
-                                Monitor GPS, Wi-Fi, RSU, and OBU data with
-                                advanced visualization and insights.
+                                View GPS, Wi-Fi, RSU, and OBU data with
+                                interactive maps and comprehensive insights.
                             </p>
                         </div>
 
                         <div className="bg-white p-8 rounded-xl border border-gray-200 hover:shadow-lg transition-shadow">
                             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-6">
-                                <svg
-                                    className="w-6 h-6 text-green-600"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                                    />
-                                </svg>
+                                <GrSecure className="w-6 h-6 text-green-600" />
                             </div>
                             <h3 className="text-xl font-semibold text-gray-900 mb-3">
                                 Secure Platform
@@ -330,26 +256,14 @@ export default function Home() {
 
                         <div className="bg-white p-8 rounded-xl border border-gray-200 hover:shadow-lg transition-shadow">
                             <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-6">
-                                <svg
-                                    className="w-6 h-6 text-purple-600"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                                    />
-                                </svg>
+                                <IoCloudDownloadOutline className="w-6 h-6 text-purple-600" />
                             </div>
                             <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                                Easy Export
+                                Easy Download
                             </h3>
                             <p className="text-gray-600">
-                                Export data in multiple formats with powerful
-                                filtering and search capabilities.
+                                Download data in CSV format with date-based
+                                filtering capabilities.
                             </p>
                         </div>
                     </div>

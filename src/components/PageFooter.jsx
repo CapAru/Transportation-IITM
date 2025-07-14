@@ -33,7 +33,7 @@ export default function PageFooter() {
                                 </h3>
                                 <a href="https://civil.iitm.ac.in/tran/">
                                     <p className="text-sm text-gray-300">
-                                        Department of Transportation Engineering
+                                        Transportation Engineering Division
                                     </p>
                                 </a>
                             </div>
