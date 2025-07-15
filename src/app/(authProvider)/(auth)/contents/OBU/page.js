@@ -1,91 +1,290 @@
 "use client";
-import TableComponent from "@/components/TableComponent";
 import { useEffect, useState } from "react";
-
+import OBUMap from "@/components/OBUMap";
+import { Loader } from "@aws-amplify/ui-react";
+import "@aws-amplify/ui-react/styles.css";
 export default function OBUPage() {
     useEffect(() => {
-        document.title = "OBU Data";
-        document.description = "Explore On-Board Unit (OBU) data.";
+        document.title = "GPS Data";
+        document.description = "Explore GPS data and bus routes.";
     }, []);
-    const [data, setData] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch("/api/OBU", {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                });
-                if (!response.ok) {
-                    throw new Error("Network response was not ok");
-                }
-                const result = await response.json();
-                setData(result);
-            } catch (error) {
-                setError(error.message);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const [mapData, setMapData] = useState(null);
+    const [selectedDate, setSelectedDate] = useState("");
+    const [availableOBUs, setAvailableOBUs] = useState([]);
+    const [selectedOBU, setSelectedOBU] = useState("");
+    const [isDownloading, setIsDownloading] = useState(false);
+    const [isLoadingOBUs, setIsLoadingOBUs] = useState(false);
+    const [showDirections, setShowDirections] = useState(true);
 
-        fetchData();
-    }, []);
-    
-    const columns = Object.keys(data[0] || {})
+    async function handleDateSubmit() {
+        if (!selectedDate) {
+            console.error("No date selected");
+            return;
+        }
 
+        console.log("Fetching data for selected date:", selectedDate);
+        setIsLoadingOBUs(true);
 
-    const handleDownload = async () => {
         try {
-            const response = await fetch("/api/OBU", {
-                method: "POST",
+            const res = await fetch(`/api/OBU?date=${selectedDate}`, {
+                method: "GET",
                 headers: {
                     "Content-Type": "application/json",
                 },
             });
-            if (!response.ok) {
-                throw new Error("Network response was not ok");
+
+            if (!res.ok) {
+                console.error("Failed to fetch GPS data for the selected date");
+                return;
             }
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            const filename =
-                response.headers
-                    .get("content-disposition")
-                    ?.split("filename=")[1]
-                    ?.replace(/"/g, "") || "OBU_data.csv";
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
+
+            const data = await res.json();
+            console.log("Fetched OBU_id data:", data);
+            if (!data.obu_ids || data.obu_ids.length === 0) {
+                console.warn("No OBUs found for the selected date");
+                setAvailableOBUs([]);
+                return;
+            }
+            setAvailableOBUs(data.obu_ids || []);
         } catch (error) {
-            console.error("Error downloading file:", error);
+            console.error("Error fetching GPS data:", error);
+        } finally {
+            setIsLoadingOBUs(false);
         }
-    };
+    }
+
+    function handleClick(obu_id) {
+        return async () => {
+            try {
+                setSelectedOBU(obu_id);
+                const data = await fetch(
+                    `/api/OBU/${obu_id}?date=${selectedDate}`,
+                    {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    }
+                );
+                if (!data.ok) {
+                    console.error("Failed to fetch GPS data");
+                    return;
+                }
+                const fetchedData = await data.json();
+                setMapData(fetchedData);
+            } catch (error) {
+                console.error("Error fetching GPS data:", error);
+            }
+        };
+    }
+
+    async function handleDownloadCSV() {
+        if (!selectedOBU || !selectedDate) {
+            alert("Please select a date and OBU first");
+            return;
+        }
+
+        setIsDownloading(true);
+        try {
+            const response = await fetch(
+                `/api/OBU/${selectedOBU}?date=${selectedDate}`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch data for CSV download");
+            }
+
+            const data = await response.json();
+
+            // Convert JSON to CSV
+            const csvContent = convertToCSV(data);
+
+            // Create and download the file
+            const blob = new Blob([csvContent], {
+                type: "text/csv;charset=utf-8;",
+            });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute(
+                "download",
+                `OBU_${selectedOBU}_${selectedDate}.csv`
+            );
+            link.style.visibility = "hidden";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (error) {
+            console.error("Error downloading CSV:", error);
+            alert("Failed to download CSV file");
+        } finally {
+            setIsDownloading(false);
+        }
+    }
+
+    function convertToCSV(data) {
+        if (!data || data.length === 0) return "";
+
+        const headers = Object.keys(data[0]);
+        const csvHeaders = headers.join(",");
+
+        const csvRows = data.map((row) => {
+            return headers
+                .map((header) => {
+                    let value = row[header];
+
+                    // Format time and date values
+                    if (
+                        header.toLowerCase().includes("time") &&
+                        value &&
+                        typeof value === "string"
+                    ) {
+                        // Extract time part from ISO string (e.g., "1970-01-01T00:00:02.000Z" -> "00:00:02")
+                        const timeMatch = value.match(/T(\d{2}:\d{2}:\d{2})/);
+                        if (timeMatch) {
+                            value = timeMatch[1];
+                        }
+                    } else if (
+                        header.toLowerCase().includes("date") &&
+                        value &&
+                        typeof value === "string"
+                    ) {
+                        // Extract date part from ISO string (e.g., "2025-05-08T00:00:00.000Z" -> "2025-05-08")
+                        const dateMatch = value.match(/(\d{4}-\d{2}-\d{2})/);
+                        if (dateMatch) {
+                            value = dateMatch[1];
+                        }
+                    }
+
+                    // Handle values that might contain commas or quotes
+                    if (
+                        typeof value === "string" &&
+                        (value.includes(",") || value.includes('"'))
+                    ) {
+                        return `"${value.replace(/"/g, '""')}"`;
+                    }
+                    return value;
+                })
+                .join(",");
+        });
+
+        return [csvHeaders, ...csvRows].join("\n");
+    }
 
     return (
-        <div className="p-6">
-            <div className="flex items-center justify-between mb-6">
-                <h1 className="text-4xl font-bold mb-6">
-                    On-Board Unit (OBU) Data
-                </h1>
-                <button
-                    onClick={handleDownload}
-                    className="bg-yellow-300 hover:bg-yellow-400 transition duration-200 hover:cursor-pointer hover:scale-105 px-6 py-3 rounded-2xl"
-                >
-                    Download Dataset
-                </button>
+        <div className="px-6">
+            <h1 className="text-3xl font-bold mb-6">
+                On-Board Unit (OBU) Data
+            </h1>
+            <div className="flex justify-evenly space-x-4">
+                <div className="flex flex-col">
+                    <OBUMap mapData={mapData} showDirections={showDirections} />
+
+                    {/* Direction Toggle Button */}
+                    <div className="mt-2 flex justify-center">
+                        <button
+                            onClick={() => setShowDirections(!showDirections)}
+                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                                showDirections
+                                    ? "bg-blue-600 text-white hover:bg-blue-700"
+                                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                            }`}
+                        >
+                            {showDirections
+                                ? "Hide Directions"
+                                : "Show Directions"}
+                        </button>
+                    </div>
+                </div>
+                <div className="py-4 flex-grow px-6 h-[calc(100vh-250px)] border border-gray-300 rounded-lg bg-white flex flex-col">
+                    <form
+                        className="mb-4"
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            handleDateSubmit();
+                        }}
+                    >
+                        <label className="block mb-2 text-sm font-medium text-gray-700">
+                            Select Date
+                        </label>
+                        <input
+                            type="date"
+                            value={selectedDate}
+                            className="block w-full p-2 border border-gray-300 rounded-lg mb-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            onChange={(e) => setSelectedDate(e.target.value)}
+                        />
+                        <button
+                            type="submit"
+                            disabled={!selectedDate || isLoadingOBUs}
+                            className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed transition-colors font-medium flex items-center justify-center hover:cursor-pointer"
+                        >
+                            {isLoadingOBUs ? (
+                                <>
+                                    <span className="mr-2">
+                                        Loading OBUs...
+                                    </span>
+                                    <Loader size="small" className="mr-2" />
+                                </>
+                            ) : (
+                                "Get OBUs for Date"
+                            )}
+                        </button>
+                    </form>
+
+                    {/* Download Button */}
+                    {selectedOBU && (
+                        <div className="mb-4">
+                            <button
+                                onClick={handleDownloadCSV}
+                                disabled={isDownloading}
+                                className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 disabled:bg-green-300 disabled:cursor-not-allowed transition-colors font-medium flex items-center justify-center hover:cursor-pointer"
+                            >
+                                {isDownloading ? (
+                                    <>
+                                        <span className="mr-2">
+                                            Downloading...
+                                        </span>
+                                        <Loader size="small" className="mr-2" />
+                                    </>
+                                ) : (
+                                    "Download CSV"
+                                )}
+                            </button>
+                        </div>
+                    )}
+
+                    {/* Display available OBUs */}
+                    {availableOBUs.length > 0 && (
+                        <div className="mt-4 flex-1 flex flex-col min-h-0">
+                            <h3 className="text-lg font-medium mb-2">
+                                Available OBU_IDs ({availableOBUs.length})
+                            </h3>
+                            <div className="grid grid-cols-4 gap-2 overflow-y-auto flex-1 p-2 rounded">
+                                {availableOBUs.map((OBU) => (
+                                    <button
+                                        key={OBU}
+                                        onClick={handleClick(OBU)}
+                                        className={`text-center p-2 rounded border transition-colors ${
+                                            selectedOBU === OBU
+                                                ? "bg-blue-100 border-blue-300 text-blue-800"
+                                                : "bg-gray-100 border-gray-200 hover:bg-blue-50"
+                                        }`}
+                                    >
+                                        {OBU}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
             </div>
-            {loading && <p className="text-gray-500">Loading...</p>}
-            {error && <p className="text-red-500">Error: {error}</p>}
-            {!loading && !error && data.length === 0 && (
-                <p className="text-gray-500">No data available.</p>
-            )}
-            <TableComponent columns={columns} data={data} />
         </div>
     );
 }
