@@ -1,5 +1,5 @@
 "use client";
-
+import Image from "next/image";
 import NavBar from "@/components/NavBar";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -62,7 +62,7 @@ export default function Home() {
             ) : (
                 <nav className="flex justify-between items-center px-6 py-4 lg:px-12 bg-white shadow-sm">
                     <div className="flex items-center">
-                        <img src="/IIT_Madras_Logo.svg" width={"50px"} />
+                        <Image src="/IIT_Madras_Logo.svg" width={40} height={40} alt="IIT Madras Logo" />
                     </div>
                     <div className="hidden md:flex space-x-8">
                         <Link

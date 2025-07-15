@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -39,7 +40,7 @@ export default function Login() {
         if (loggedIn) {
             router.push(path);
         }
-    }, [loggedIn]);
+    }, [loggedIn, router, path]);
 
     function handleLogin(event) {
         event.preventDefault();
@@ -99,7 +100,13 @@ export default function Login() {
 
     return (
         <div className="flex items-center min-h-screen bg-gray-100 w-full">
-            <img src="/Background2.png" className="hidden md:block h-screen" />
+            <Image 
+                src="/Background2.png" 
+                width={1920} 
+                height={1080} 
+                alt="Bus moving on a road, giving signals to wifi sensors and GPS location" 
+                className="hidden md:block h-screen object-cover" 
+            />
             <div className="flex flex-col justify-start bg-gradient-to-br from-purple-900 via-blue-950 to-gray-900 px-4 sm:px-8 py-8 w-full min-h-screen">
                 <Link
                     href="/"
@@ -168,7 +175,7 @@ export default function Login() {
                             </p>
                         )}
                         <p className="mt-4">
-                            Don't have an account?{" "}
+                            {"Don't have an account?"}
                             <Link
                                 href="/signup"
                                 className="text-blue-400 hover:underline"

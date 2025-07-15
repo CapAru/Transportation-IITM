@@ -218,8 +218,8 @@ const UserViewElement = ({ user }) => {
                         </h2>
                         <p className="mb-4 text-gray-600">
                             Please select an expiry date for user{" "}
-                            <span className="font-semibold">{user.name}</span>'s
-                            account:
+                            <span className="font-semibold">{user.name}</span>
+                            &apos;s account:
                         </p>
 
                         <div className="mb-4">

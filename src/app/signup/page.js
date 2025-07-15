@@ -6,6 +6,7 @@ import { IoArrowBackCircleOutline } from "react-icons/io5";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import "@aws-amplify/ui-react/styles.css";
+import Image from "next/image";
 
 export default function Signup() {
     const [loggedIn, setLoggedIn] = useState(false);
@@ -41,7 +42,7 @@ export default function Signup() {
         if (loggedIn) {
             router.push(path);
         }
-    }, [loggedIn]);
+    }, [loggedIn, router, path]);
 
     function handleSignup(event) {
         event.preventDefault();
@@ -210,7 +211,13 @@ export default function Signup() {
                     </form>
                 </div>
             </div>
-            <img src="/Background.png" className="hidden md:block h-screen" />
+            <Image
+                src="/Background.png"
+                width={1920}
+                height={1080}
+                alt="Bus moving on a road, giving signals to wifi sensors and GPS location"
+                className="hidden md:block h-screen"
+            />
         </div>
     );
 }
