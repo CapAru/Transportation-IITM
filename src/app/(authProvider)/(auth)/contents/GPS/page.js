@@ -15,6 +15,7 @@ export default function GPSPage() {
     const [selectedIMEI, setSelectedIMEI] = useState("");
     const [isDownloading, setIsDownloading] = useState(false);
     const [isLoadingIMEIs, setIsLoadingIMEIs] = useState(false);
+    const [showDirections, setShowDirections] = useState(true);
 
     async function handleDateSubmit() {
         if (!selectedDate) {
@@ -178,7 +179,25 @@ export default function GPSPage() {
                 Global Positioning System (GPS) Data
             </h1>
             <div className="flex justify-evenly space-x-4">
-                <GPSMap mapData={mapData} />
+                <div className="flex flex-col">
+                    <GPSMap mapData={mapData} showDirections={showDirections} />
+
+                    {/* Direction Toggle Button */}
+                    <div className="mt-2 flex justify-center">
+                        <button
+                            onClick={() => setShowDirections(!showDirections)}
+                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                                showDirections
+                                    ? "bg-blue-600 text-white hover:bg-blue-700"
+                                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                            }`}
+                        >
+                            {showDirections
+                                ? "Hide Directions"
+                                : "Show Directions"}
+                        </button>
+                    </div>
+                </div>
                 <div className="py-4 flex-grow px-6 h-[calc(100vh-250px)] border border-gray-300 rounded-lg bg-white flex flex-col">
                     <form
                         className="mb-4"
@@ -224,7 +243,9 @@ export default function GPSPage() {
                             >
                                 {isDownloading ? (
                                     <>
-                                        <span className="mr-2">Downloading...</span>
+                                        <span className="mr-2">
+                                            Downloading...
+                                        </span>
                                         <Loader size="small" className="mr-2" />
                                     </>
                                 ) : (

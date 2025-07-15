@@ -26,12 +26,13 @@ if (typeof document !== "undefined") {
     document.head.appendChild(styleSheet);
 }
 
-const GPSMap = ({ mapData }) => {
+const GPSMap = ({ mapData, showDirections = true }) => {
     const mapRef = useRef(null);
     const mapInstanceRef = useRef(null);
     const markersRef = useRef([]); // Track all markers
     const routeLayersRef = useRef([]); // Track route polylines
     const legendRef = useRef(null); // Track speed legend
+    const arrowMarkersRef = useRef([]); // Track direction arrows separately
 
     useEffect(() => {
         if (!mapInstanceRef.current) {
@@ -61,6 +62,7 @@ const GPSMap = ({ mapData }) => {
                 });
                 markersRef.current = [];
                 routeLayersRef.current = [];
+                arrowMarkersRef.current = [];
 
                 // Remove existing legend if it exists
                 if (legendRef.current) {
@@ -90,6 +92,12 @@ const GPSMap = ({ mapData }) => {
                 mapInstanceRef.current.removeLayer(layer);
             });
             routeLayersRef.current = [];
+
+            // Clear existing arrow markers
+            arrowMarkersRef.current.forEach((marker) => {
+                mapInstanceRef.current.removeLayer(marker);
+            });
+            arrowMarkersRef.current = [];
 
             // Remove existing legend if it exists
             if (legendRef.current) {
@@ -212,7 +220,7 @@ const GPSMap = ({ mapData }) => {
                     ).addTo(mapInstanceRef.current);
 
                     // Add direction arrow for every 5th segment to avoid clutter
-                    if (i % 5 === 0) {
+                    if (i % 5 === 0 && showDirections) {
                         // Calculate midpoint of the segment
                         const midLat = (currentPoint[0] + nextPoint[0]) / 2;
                         const midLng = (currentPoint[1] + nextPoint[1]) / 2;
@@ -265,8 +273,8 @@ const GPSMap = ({ mapData }) => {
                             interactive: false, // Make arrow non-interactive
                         }).addTo(mapInstanceRef.current);
 
-                        // Track the arrow marker for cleanup
-                        markersRef.current.push(arrowMarker);
+                        // Track the arrow marker separately for show/hide functionality
+                        arrowMarkersRef.current.push(arrowMarker);
                     }
 
                     // Add popup with speed info on hover
@@ -367,6 +375,29 @@ const GPSMap = ({ mapData }) => {
             }
         }
     }, [mapData]);
+
+    // Separate useEffect to handle direction arrows visibility
+    useEffect(() => {
+        if (mapInstanceRef.current && arrowMarkersRef.current.length > 0) {
+            arrowMarkersRef.current.forEach((marker) => {
+                try {
+                    // Always try to remove first to ensure clean state
+                    mapInstanceRef.current.removeLayer(marker);
+                } catch (e) {
+                    // Ignore errors if marker wasn't on map
+                }
+
+                // Add back if showDirections is true
+                if (showDirections) {
+                    try {
+                        mapInstanceRef.current.addLayer(marker);
+                    } catch (e) {
+                        console.warn("Failed to add arrow marker:", e);
+                    }
+                }
+            });
+        }
+    }, [showDirections]);
 
     return (
         <div
