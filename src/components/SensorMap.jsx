@@ -10,8 +10,12 @@ import ReactDOMServer from "react-dom/server";
 const SensorMap = ({ sensors, name }) => {
     const router = useRouter();
     useEffect(() => {
+        // Ensure we're on the client side
+        if (typeof window === "undefined" || typeof document === "undefined") {
+            return;
+        }
+
         const mapContainer = document.getElementById("map");
-        console.log("Map container:", mapContainer);
         if (!mapContainer) return;
 
         const map = L.map(mapContainer, { attributionControl: false }); // Disable default attribution control

@@ -62,7 +62,6 @@ function formatExpiryDate(date, timezone = "Asia/Kolkata") {
 
 export async function sendUserExpiryMail(user, userTimezone = null) {
     try {
-        console.log(user)
         if (!user || !user.email || !user.validity) {
             console.error("Missing required user information for expiry email");
             return {
@@ -117,7 +116,6 @@ export async function sendUserExpiryMail(user, userTimezone = null) {
         try {
             await transporter.verify();
             const info = await transporter.sendMail(mailOptions);
-            console.log("User expiry email sent successfully:", info.response);
             return { success: true, message: "Expiry email sent successfully" };
         } catch (error) {
             console.error("Error sending user expiry email:", error);

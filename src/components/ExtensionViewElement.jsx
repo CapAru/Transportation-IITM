@@ -103,11 +103,6 @@ const ExtensionViewElement = ({ user }) => {
             return dateString;
         }
     };
-
-    useEffect(() => {
-        console.log(showDetails);
-    }, [showDetails]);
-
     return (
         <>
             {/* Toast Notification */}

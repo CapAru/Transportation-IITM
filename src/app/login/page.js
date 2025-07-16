@@ -17,18 +17,24 @@ export default function Login() {
     const [loading, setLoading] = useState(true); // Add loading state for the form
     useEffect(() => {
         async function fetchUserData() {
-            const res = await fetch("/api/user", {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-            if (res.ok) {
-                const data = await res.json();
-                if (data.user) {
-                    setLoggedIn(true);
-                    setPath(data.user.isAdmin ? "/admin" : "/contents");
+            try {
+                const res = await fetch("/api/user", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    credentials: "include",
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.user) {
+                        setLoggedIn(true);
+                        setPath(data.user.isAdmin ? "/admin" : "/contents");
+                        return;
+                    }
                 }
+            } catch (error) {
+                console.error("Error fetching user data:", error);
             }
         }
 
@@ -60,9 +66,12 @@ export default function Login() {
                 email,
                 password,
             }),
+            credentials: "include",
         });
 
-        res.then((response) => response.json())
+        res.then((response) => {
+            return response.json();
+        })
             .then((data) => {
                 if (data.validity && data.validity < new Date()) {
                     setWarning(
@@ -75,10 +84,30 @@ export default function Login() {
                 if (data.error) {
                     setWarning(data.error); // Use warning instead of alert
                     setIsLoading(false); // Stop loading on error
-                } else if (data.isAdmin) {
-                    window.location.href = "/admin";
+                } else if (data.message === "success") {
+                    // Store session info in localStorage as fallback
+                    if (typeof window !== "undefined" && data.debug) {
+                        localStorage.setItem(
+                            "sessionData",
+                            JSON.stringify({
+                                isAdmin: data.isAdmin,
+                                timestamp: new Date().getTime(),
+                                environment: data.debug.environment,
+                            })
+                        );
+                    }
+
+                    // Add a small delay to ensure cookie is set
+                    setTimeout(() => {
+                        if (data.isAdmin) {
+                            window.location.href = "/admin";
+                        } else {
+                            window.location.href = "/contents";
+                        }
+                    }, 100);
                 } else {
-                    window.location.href = "/";
+                    setWarning("Login failed. Please try again.");
+                    setIsLoading(false);
                 }
                 // Don't set loading to false here since we're redirecting
             })
@@ -100,12 +129,12 @@ export default function Login() {
 
     return (
         <div className="flex items-center min-h-screen bg-gray-100 w-full">
-            <Image 
-                src="/Background2.png" 
-                width={1920} 
-                height={1080} 
-                alt="Bus moving on a road, giving signals to wifi sensors and GPS location" 
-                className="hidden md:block h-screen object-cover" 
+            <Image
+                src="/Background2.png"
+                width={1920}
+                height={1080}
+                alt="Bus moving on a road, giving signals to wifi sensors and GPS location"
+                className="hidden md:block h-screen object-cover"
             />
             <div className="flex flex-col justify-start bg-gradient-to-br from-purple-900 via-blue-950 to-gray-900 px-4 sm:px-8 py-8 w-full min-h-screen">
                 <Link

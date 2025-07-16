@@ -31,7 +31,10 @@ export async function middleware(request) {
         );
         const { payload } = await jwtVerify(accessToken, secret);
 
-        if ((!payload || !payload.userId || payload.exp < Date.now() / 1000) && isPublicApi) {
+        if (
+            (!payload || !payload.userId || payload.exp < Date.now() / 1000) &&
+            isPublicApi
+        ) {
             cookieStore.delete("sessionToken");
             return NextResponse.next();
         }

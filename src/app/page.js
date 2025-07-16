@@ -36,7 +36,7 @@ export default function Home() {
                     }
                 }
             } catch (error) {
-                console.log("User not logged in");
+                console.error("Error checking auth status:", error);
             } finally {
                 setLoading(false);
             }

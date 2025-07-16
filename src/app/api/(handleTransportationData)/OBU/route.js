@@ -31,7 +31,6 @@ export async function GET(request) {
             );
         }
         const uniqueOBUs = data.map((item) => item.obu_id);
-        console.log("Unique OBU_ids found:", uniqueOBUs.length);
         return NextResponse.json(
             {
                 date: date,

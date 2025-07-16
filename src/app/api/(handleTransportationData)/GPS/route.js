@@ -7,7 +7,6 @@ export async function GET(request) {
     if (!date) {
         return NextResponse.json({ error: "Date parameter is required" }, { status: 400 });
     }
-    console.log("Fetching GPS data for date:", date);
     try {
         const data = await transportDb.gps_data.findMany({
             where: {
@@ -26,7 +25,6 @@ export async function GET(request) {
             return NextResponse.json({ message: "No data found for the selected date" }, { status: 404 });
         }
         const uniqueIMEIs = data.map((item) => item.imei);
-        console.log("Unique IMEIs found:", uniqueIMEIs.length);
         return NextResponse.json(
             {
                 date: date,

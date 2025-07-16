@@ -69,7 +69,6 @@ export default function Signup() {
         res.then((response) => response.json())
             .then((data) => {
                 if (data.error) {
-                    console.log(data);
                     setWarning(data.error);
                     setIsLoading(false);
                 } else {

@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import { comparePassword } from "@/lib/encryptPassword";
 import { cookies } from "next/headers";
 import { generateAccessToken, generateRefreshToken } from "@/lib/generateTokens";
-
+import { serialize } from "cookie";
 const prisma = new PrismaClient();
 
 export async function POST(request) {
@@ -20,7 +20,7 @@ export async function POST(request) {
                 { status: 404 }
             );
         }
-        if (await comparePassword(password, user.password) === false) {
+        if ((await comparePassword(password, user.password)) === false) {
             return NextResponse.json(
                 { error: "Invalid password" },
                 { status: 401 }
@@ -45,22 +45,39 @@ export async function POST(request) {
                 expiresAt: new Date(Date.now() + 60 * 60 * 24 * 1000), // 1 day
             },
         });
+        const cookieValue = JSON.stringify({
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+        });
 
-        const cookieStore = await cookies();
-        cookieStore.set({
-            name: "sessionToken",
-            value: JSON.stringify({
-                accessToken: accessToken,
-                refreshToken: refreshToken,
-            }),
+        // More robust cookie configuration for production and network access
+        const isProduction = process.env.NODE_ENV === "production";
+        const host = request.headers.get("host");
+        const isNetworkIP = host && /^\d+\.\d+\.\d+\.\d+/.test(host);
+
+        const cookie = serialize("sessionToken", cookieValue, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
+            secure: isProduction && !isNetworkIP, // Don't require HTTPS for local network IPs
+            sameSite: isProduction && !isNetworkIP ? "none" : "lax", // Use lax for local network
             maxAge: 60 * 60 * 24, // 1 day
             path: "/",
         });
 
-        return NextResponse.json({ message: "success", isAdmin: user.isAdmin }, { status: 200 });
+        const res = NextResponse.json(
+            {
+                message: "success",
+                isAdmin: user.isAdmin,
+                debug: {
+                    cookieSet: true,
+                    environment: process.env.NODE_ENV,
+                    secure: isProduction,
+                },
+            },
+            { status: 200 }
+        );
+
+        res.headers.set("Set-Cookie", cookie);
+        return res;
     } catch (error) {
         console.error("Error logging in:", error);
         return NextResponse.json(

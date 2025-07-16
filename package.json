@@ -17,6 +17,8 @@
     "aws-amplify": "^6.15.0",
     "bcrypt": "^6.0.0",
     "concurrently": "^9.1.2",
+    "cookie": "^1.0.2",
+    "cookies": "^0.9.1",
     "dotenv": "^16.5.0",
     "generate-password": "^1.7.1",
     "jose": "^6.0.11",

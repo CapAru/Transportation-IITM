@@ -105,7 +105,6 @@ export async function POST(request, { params }) {
             });
 
             csvStream.on("end", () => {
-                console.log("CSV generation completed");
                 resolve(
                     new NextResponse(csv, {
                         headers: {

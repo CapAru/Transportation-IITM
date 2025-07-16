@@ -1,8 +1,18 @@
 "use client";
 import { useEffect, useState } from "react";
-import GPSMap from "@/components/GPSMap";
+import dynamic from "next/dynamic";
 import { Loader } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
+
+// Dynamically import GPSMap component to avoid SSR issues
+const GPSMap = dynamic(() => import("@/components/GPSMap"), {
+    ssr: false,
+    loading: () => (
+        <div className="flex items-center justify-center h-96 border border-gray-300 rounded-lg">
+            <Loader size="large" />
+        </div>
+    ),
+});
 export default function GPSPage() {
     useEffect(() => {
         document.title = "GPS Data";
@@ -22,8 +32,6 @@ export default function GPSPage() {
             console.error("No date selected");
             return;
         }
-
-        console.log("Fetching data for selected date:", selectedDate);
         setIsLoadingIMEIs(true);
 
         try {
@@ -40,7 +48,6 @@ export default function GPSPage() {
             }
 
             const data = await res.json();
-            console.log("Fetched IMEI data:", data);
             setAvailableIMEIs(data.imeis || []);
         } catch (error) {
             console.error("Error fetching GPS data:", error);

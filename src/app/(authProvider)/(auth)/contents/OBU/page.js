@@ -1,8 +1,18 @@
 "use client";
 import { useEffect, useState } from "react";
-import OBUMap from "@/components/OBUMap";
+import dynamic from "next/dynamic";
 import { Loader } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
+
+// Dynamically import OBUMap component to avoid SSR issues
+const OBUMap = dynamic(() => import("@/components/OBUMap"), {
+    ssr: false,
+    loading: () => (
+        <div className="flex items-center justify-center h-96 border border-gray-300 rounded-lg">
+            <Loader size="large" />
+        </div>
+    ),
+});
 export default function OBUPage() {
     useEffect(() => {
         document.title = "GPS Data";
@@ -22,8 +32,6 @@ export default function OBUPage() {
             console.error("No date selected");
             return;
         }
-
-        console.log("Fetching data for selected date:", selectedDate);
         setIsLoadingOBUs(true);
 
         try {
@@ -40,7 +48,6 @@ export default function OBUPage() {
             }
 
             const data = await res.json();
-            console.log("Fetched OBU_id data:", data);
             if (!data.obu_ids || data.obu_ids.length === 0) {
                 console.warn("No OBUs found for the selected date");
                 setAvailableOBUs([]);

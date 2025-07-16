@@ -19,12 +19,18 @@ const arrowStyles = `
     }
 `;
 
-// Inject styles into document head
-if (typeof document !== "undefined") {
-    const styleSheet = document.createElement("style");
-    styleSheet.textContent = arrowStyles;
-    document.head.appendChild(styleSheet);
-}
+// Function to inject styles safely
+const injectStyles = () => {
+    if (typeof document !== "undefined" && typeof window !== "undefined") {
+        // Check if styles are already injected
+        if (!document.getElementById("gps-map-styles")) {
+            const styleSheet = document.createElement("style");
+            styleSheet.id = "gps-map-styles";
+            styleSheet.textContent = arrowStyles;
+            document.head.appendChild(styleSheet);
+        }
+    }
+};
 
 const GPSMap = ({ mapData, showDirections = true }) => {
     const mapRef = useRef(null);
@@ -35,7 +41,10 @@ const GPSMap = ({ mapData, showDirections = true }) => {
     const arrowMarkersRef = useRef([]); // Track direction arrows separately
 
     useEffect(() => {
-        if (!mapInstanceRef.current) {
+        // Inject styles when component mounts
+        injectStyles();
+
+        if (!mapInstanceRef.current && typeof window !== "undefined") {
             // Initialize the map
             mapInstanceRef.current = L.map(mapRef.current).setView(
                 [13.0827, 80.2707],
@@ -78,8 +87,6 @@ const GPSMap = ({ mapData, showDirections = true }) => {
 
     // Separate useEffect to handle mapData changes
     useEffect(() => {
-        console.log("Data received:", mapData);
-
         if (mapData && mapData.length > 0 && mapInstanceRef.current) {
             // Clear existing markers
             markersRef.current.forEach((marker) => {
@@ -147,32 +154,15 @@ const GPSMap = ({ mapData, showDirections = true }) => {
                         coord[1]
                     );
                     if (distance > 2) {
-                        console.log(
-                            `Filtered out point at distance: ${distance.toFixed(
-                                2
-                            )} km`
-                        );
                         return false;
                     }
                     return true;
                 });
-
-            console.log(
-                "Plotting raw GPS coordinates with speed (after filtering):",
-                pathCoordinates.length
-            );
-
             if (pathCoordinates.length > 1) {
                 // Calculate speed range for gradient
                 const speeds = pathCoordinates.map((coord) => coord[2]);
                 const minSpeed = Math.min(...speeds);
                 const maxSpeed = Math.max(...speeds);
-
-                console.log(
-                    `Speed range: ${minSpeed.toFixed(2)} - ${maxSpeed.toFixed(
-                        2
-                    )}`
-                );
 
                 // Function to get color based on speed (Red = slow, Yellow = medium, Green = fast)
                 const getSpeedColor = (speed) => {
@@ -366,10 +356,6 @@ const GPSMap = ({ mapData, showDirections = true }) => {
                     );
 
                 markersRef.current.push(startMarker, endMarker);
-
-                console.log(
-                    `Raw GPS route visualization complete. Points: ${pathCoordinates.length}`
-                );
             } else {
                 console.warn("Not enough valid coordinates to create a route");
             }
