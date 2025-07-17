@@ -186,19 +186,19 @@ export default function OBUPage() {
     }
 
     return (
-        <div className="px-6">
-            <h1 className="text-3xl font-bold mb-6">
+        <div className="px-3 md:px-6">
+            <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6">
                 On-Board Unit (OBU) Data
             </h1>
-            <div className="flex justify-evenly space-x-4">
-                <div className="flex flex-col">
+            <div className="flex flex-col lg:flex-row lg:justify-evenly lg:space-x-4 space-y-4 lg:space-y-0">
+                <div className="flex flex-col order-2 lg:order-1">
                     <OBUMap mapData={mapData} showDirections={showDirections} />
 
                     {/* Direction Toggle Button */}
                     <div className="mt-2 flex justify-center">
                         <button
                             onClick={() => setShowDirections(!showDirections)}
-                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                            className={`px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-medium transition-colors ${
                                 showDirections
                                     ? "bg-blue-600 text-white hover:bg-blue-700"
                                     : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -210,7 +210,7 @@ export default function OBUPage() {
                         </button>
                     </div>
                 </div>
-                <div className="py-4 flex-grow px-6 h-[calc(100vh-250px)] border border-gray-300 rounded-lg bg-white flex flex-col">
+                <div className="py-4 lg:flex-grow px-4 md:px-6 h-auto lg:h-[calc(100vh-250px)] border border-gray-300 rounded-lg bg-white flex flex-col order-1 lg:order-2">
                     <form
                         className="mb-4"
                         onSubmit={(e) => {
@@ -230,7 +230,7 @@ export default function OBUPage() {
                         <button
                             type="submit"
                             disabled={!selectedDate || isLoadingOBUs}
-                            className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed transition-colors font-medium flex items-center justify-center hover:cursor-pointer"
+                            className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed transition-colors font-medium flex items-center justify-center hover:cursor-pointer text-sm md:text-base"
                         >
                             {isLoadingOBUs ? (
                                 <>

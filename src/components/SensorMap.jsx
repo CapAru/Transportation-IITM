@@ -71,12 +71,7 @@ const SensorMap = ({ sensors, name }) => {
     return (
         <div
             id="map"
-            style={{
-                height: `calc(100vh-250px)`,
-                width: "800px",
-                border: "1px solid #ccc",
-                borderRadius: "8px",
-            }}
+            className="h-[400px] md:h-[500px] lg:h-[calc(100vh-250px)] w-full lg:w-[800px] border border-gray-300 rounded-lg"
         />
     );
 };

@@ -388,12 +388,7 @@ const GPSMap = ({ mapData, showDirections = true }) => {
     return (
         <div
             ref={mapRef}
-            style={{
-                height: `calc(100vh - 250px)`,
-                width: "800px",
-                border: "1px solid #ccc",
-                borderRadius: "8px",
-            }}
+            className="w-full lg:w-[800px] h-[300px] sm:h-[400px] lg:h-[calc(100vh-250px)] border border-gray-300 rounded-lg"
         />
     );
 };
