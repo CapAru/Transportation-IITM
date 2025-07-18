@@ -21,6 +21,22 @@ const formatTimestamp = (timestamp) => {
     return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
 };
 
+// Function to format timestamp to simple HH:MM:SS format
+const formatTimeOnly = (timestamp) => {
+    const date = new Date(timestamp);
+
+    // Check if date is valid
+    if (isNaN(date.getTime())) {
+        return "Invalid Time";
+    }
+
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = String(date.getSeconds()).padStart(2, "0");
+
+    return `${hours}:${minutes}:${seconds}`;
+};
+
 // Function to format data with timestamps
 const formatDataTimestamps = (data) => {
     return data.map((item) => ({
@@ -34,32 +50,103 @@ export async function GET(request, { params }) {
     const { sensor_id } = await params;
     const year = searchParams.get("year");
     const month = searchParams.get("month");
+    const day = searchParams.get("day");
 
     try {
-        // Create date range for the selected month
-        const startDate = new Date(year, month - 1, 1); // First day of the month
-        const endDate = new Date(year, month, 0, 23, 59, 59, 999); // Last day of the month
-        // Fetch the route data for the given sensor_id, year, and month
+        // Create date range for the selected day
+        const startDate = new Date(year, month - 1, day, 0, 0, 0, 0); // Start of the selected day
+        const endDate = new Date(year, month - 1, day, 23, 59, 59, 999); // End of the selected day
+        // Fetch the route data for the given sensor_id, year, month, and day
         const tableName = `wifi_data_${sensor_id}`;
 
-        const routeData = await transportDb[tableName].findMany({
+        // Get total records count
+        const totalRecords = await transportDb[tableName].count({
             where: {
                 timestamp: {
                     gte: startDate,
                     lte: endDate,
                 },
             },
+        });
+        if (totalRecords === 0) {
+            return NextResponse.json(
+                { error: "No records found for the specified date" },
+                { status: 404 }
+            );
+        }
+        // Get unique MAC addresses count
+        const uniqueMACs = await transportDb[tableName].findMany({
+            where: {
+                timestamp: {
+                    gte: startDate,
+                    lte: endDate,
+                },
+                mac: {
+                    not: null,
+                },
+            },
+            select: {
+                mac: true,
+            },
+            distinct: ["mac"],
+        });
+
+        // Get first record
+        const firstRecord = await transportDb[tableName].findFirst({
+            where: {
+                timestamp: {
+                    gte: startDate,
+                    lte: endDate,
+                },
+            },
+            select: {
+                timestamp: true,
+            },
             orderBy: {
                 timestamp: "asc",
             },
-            take: 100,
         });
 
-        // Format timestamps before returning
-        const formattedData = formatDataTimestamps(routeData);
+        // Get last record
+        const lastRecord = await transportDb[tableName].findFirst({
+            where: {
+                timestamp: {
+                    gte: startDate,
+                    lte: endDate,
+                },
+            },
+            select: {
+                timestamp: true,
+            },
+            orderBy: {
+                timestamp: "desc",
+            },
+        });
 
-        // Return the formatted data as JSON
-        return NextResponse.json(formattedData);
+        // Format timestamps for first and last records
+        const formattedFirstRecord = firstRecord
+            ? {
+                  ...firstRecord,
+                  timestamp: formatTimeOnly(firstRecord.timestamp),
+              }
+            : null;
+
+        const formattedLastRecord = lastRecord
+            ? {
+                  ...lastRecord,
+                  timestamp: formatTimeOnly(lastRecord.timestamp),
+              }
+            : null;
+
+        const metadata = {
+            totalRecords,
+            uniqueMACs: uniqueMACs.length,
+            firstRecord: formattedFirstRecord.timestamp,
+            lastRecord: formattedLastRecord.timestamp,
+        };
+
+        // Return only the metadata as JSON
+        return NextResponse.json(metadata);
     } catch (error) {
         console.error("Error fetching route data:", error);
         return NextResponse.json(
@@ -71,10 +158,11 @@ export async function GET(request, { params }) {
 
 export async function POST(request, { params }) {
     const { sensor_id } = await params;
-    const { year, month } = await request.json();
+    const { year, month, day } = await request.json();
     try {
-        const startDate = new Date(year, month - 1, 1); // First day of the month
-        const endDate = new Date(year, month, 0, 23, 59, 59, 999); // Last day of the month
+        // Create date range for the selected day
+        const startDate = new Date(year, month - 1, day, 0, 0, 0, 0); // Start of the selected day
+        const endDate = new Date(year, month - 1, day, 23, 59, 59, 999); // End of the selected day
         const tableName = `wifi_data_${sensor_id}`;
         const data = await transportDb[tableName].findMany({
             where: {
@@ -109,7 +197,7 @@ export async function POST(request, { params }) {
                     new NextResponse(csv, {
                         headers: {
                             "Content-Type": "text/csv",
-                            "Content-Disposition": `attachment; filename="WiFi_data_${sensor_id}_${month}_${year}.csv"`,
+                            "Content-Disposition": `attachment; filename="WiFi_data_${sensor_id}_${day}-${month}-${year}.csv"`,
                         },
                     })
                 );

@@ -13,9 +13,9 @@ const GPSMap = dynamic(() => import("@/components/GPSMap"), {
         </div>
     ),
 });
-export default function GPSPage() {
+export default function BusGPSPage() {
     useEffect(() => {
-        document.title = "GPS Data";
+        document.title = "Bus GPS Data";
         document.description = "Explore GPS data and bus routes.";
     }, []);
 
@@ -35,7 +35,7 @@ export default function GPSPage() {
         setIsLoadingIMEIs(true);
 
         try {
-            const res = await fetch(`/api/GPS?date=${selectedDate}`, {
+            const res = await fetch(`/api/BusGPS?date=${selectedDate}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -61,7 +61,7 @@ export default function GPSPage() {
             try {
                 setSelectedIMEI(route);
                 const data = await fetch(
-                    `/api/GPS/${route}?date=${selectedDate}`,
+                    `/api/BusGPS/${route}?date=${selectedDate}`,
                     {
                         method: "GET",
                         headers: {
@@ -90,7 +90,7 @@ export default function GPSPage() {
         setIsDownloading(true);
         try {
             const response = await fetch(
-                `/api/GPS/${selectedIMEI}?date=${selectedDate}`,
+                `/api/BusGPS/${selectedIMEI}?date=${selectedDate}`,
                 {
                     method: "GET",
                     headers: {
@@ -264,24 +264,26 @@ export default function GPSPage() {
 
                     {/* Display available IMEIs */}
                     {availableIMEIs.length > 0 && (
-                        <div className="mt-4">
-                            <h3 className="text-base md:text-lg font-medium mb-2">
+                        <div className="mt-4 flex-1 flex flex-col min-h-0">
+                            <h3 className="text-base md:text-lg font-medium mb-2 flex-shrink-0">
                                 Available IMEIs ({availableIMEIs.length})
                             </h3>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-col gap-2 lg:space-y-2 lg:gap-0 overflow-y-auto p-2 rounded max-h-60 lg:max-h-80 border border-gray-200">
-                                {availableIMEIs.map((imei) => (
-                                    <button
-                                        key={imei}
-                                        onClick={handleClick(imei)}
-                                        className={`text-left p-2 rounded border transition-colors text-sm md:text-base ${
-                                            selectedIMEI === imei
-                                                ? "bg-blue-100 border-blue-300 text-blue-800"
-                                                : "bg-gray-100 border-gray-200 hover:bg-blue-50"
-                                        }`}
-                                    >
-                                        {imei}
-                                    </button>
-                                ))}
+                            <div className="flex-1 overflow-y-auto p-2 rounded border border-gray-200 min-h-0">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2">
+                                    {availableIMEIs.map((imei) => (
+                                        <button
+                                            key={imei}
+                                            onClick={handleClick(imei)}
+                                            className={`text-left p-2 rounded border transition-colors text-sm md:text-base ${
+                                                selectedIMEI === imei
+                                                    ? "bg-blue-100 border-blue-300 text-blue-800"
+                                                    : "bg-gray-100 border-gray-200 hover:bg-blue-50"
+                                            }`}
+                                        >
+                                            {imei}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     )}

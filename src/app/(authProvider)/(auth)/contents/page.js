@@ -11,38 +11,42 @@ export default function Contents() {
     const data = [
         {
             index: 1,
-            fullName: "Global Positioning System",
-            shortName: "GPS",
+            fullName: "Wireless Fidelity",
+            shortName: "Wi-Fi",
+            route: "Wi-Fi",
             description:
-                "A satellite-based navigation system that provides location and time information anywhere on Earth.",
+            "A technology that allows electronic devices to connect to a wireless local area network (WLAN), typically using radio waves.",
         },
         {
             index: 2,
-            fullName: "Wireless Fidelity",
-            shortName: "Wi-Fi",
+            fullName: "On-Board Unit",
+            shortName: "OBU",
+            route: "OBU",
             description:
-                "A technology that allows electronic devices to connect to a wireless local area network (WLAN), typically using radio waves.",
+            "A communication device installed in vehicles to enable interaction with roadside units and other vehicles.",
         },
         {
             index: 3,
-            fullName: "Road-side Unit",
-            shortName: "RSU",
+            fullName: "Bus Global Positioning System",
+            shortName: "Bus GPS",
+            route: "BusGPS",
             description:
-                "A fixed communication device installed along roadsides to facilitate communication between vehicles and infrastructure.",
+                "A satellite-based navigation system specifically designed for buses, providing real-time location tracking and navigation assistance.",
         },
         {
             index: 4,
-            fullName: "On-Board Unit",
-            shortName: "OBU",
+            fullName: "Auto Global Positioning System",
+            shortName: "Auto GPS",
+            route: "AutoGPS",
             description:
-                "A communication device installed in vehicles to enable interaction with roadside units and other vehicles.",
+                "A satellite-based navigation system specifically designed for autos, providing real-time location and navigation assistance.",
         },
     ];
 
     const buttonElements = data.map((item, index) => (
         <Link
             key={index}
-            href={`/contents/${item.shortName}`}
+            href={`/contents/${item.route}`}
             className="group bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 w-full border border-blue-400/20"
         >
             <div className="text-center">
